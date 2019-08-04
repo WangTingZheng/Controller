@@ -30,7 +30,7 @@ open `.vscode/c_cpp_properties.json`, you can fond this:
                 ""
             ],
 ```
-for example, you want to add u8g2 to your project's library(you have already copied the u8g2 folder to `./lib`), you should add `"c:/Users/王听正/Documents/PlatformIO/Projects/controller/lib/U8g2",`
+For example, you want to add u8g2 to your project's library(you have already copied the u8g2 folder to `./lib`), you should add `"c:/Users/王听正/Documents/PlatformIO/Projects/controller/lib/U8g2",`
 ## hardware
 - Arduino uno
 - oled screen with `I2c` protocol and `ssd1306` control chip
@@ -39,6 +39,8 @@ for example, you want to add u8g2 to your project's library(you have already cop
 ## RAM
 In the `./test`, The `main.cpp` is a project with ssd1306 library, because of high ram utilization(91.3%), I abandoned it. when I used u8glib, the utilization is 38.7%. In the `./src`, The `main.cpp` is a project with u8glib, according my compiler result, the date(ram) utilization is `38.7% (used 792 bytes from 2048 bytes)`, the program utilization is `54.1% (used 17450 bytes from 32256 bytes)`
 ## usage
+**Play attention: If vscode tells you it can not found some library, please detect my include path and add your project's.**
+- git clone to your comptuer
 - connect your oled and IR revicer to your arduino uno
 
 IR revicer:
