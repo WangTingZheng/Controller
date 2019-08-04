@@ -16,10 +16,11 @@
 - SSD1306(together with GFX)
 - IRremote
 - u8glib(it's work)
-- u8g2(net work because of high ram utilization)
+- u8g2(not work because of high ram utilization)
 ### how to install libary
 - copy your library to `./lib`
 - add every library path to `included path` in vscode
+
 open `.vscode/c_cpp_properties.json`, you can fond this:
 ```c
   "includePath": [
@@ -40,28 +41,38 @@ open `.vscode/c_cpp_properties.json`, you can fond this:
                 ""
             ],
 ```
-For example, you want to add u8g2 to your project's library(you have already copied the u8g2 folder to `./lib`), you should add `"c:/Users/王听正/Documents/PlatformIO/Projects/controller/lib/U8g2",`
+For example, you want to add u8g2 to your project's library(you have already copied the u8g2 folder to `./lib`), you should add `"my project path in your pc/controller/lib/U8g2"`,
 
 ## about RAM
-In the `./test`, The `main.cpp` is a project with ssd1306 library, because of high ram utilization(91.3%), I abandoned it. when I used u8glib, the utilization is 38.7%. In the `./src`, The `main.cpp` is a project with u8glib, according my compiler result, the date(ram) utilization is `38.7% (used 792 bytes from 2048 bytes)`, the program utilization is `54.1% (used 17450 bytes from 32256 bytes)`
+If you want use it in Arduino uno, I am sorry to telling you that your arduino may lost all usable ram becaue of some GUI library, I have already shou the ram utilization of different GUI library, you can choose what you want. if you have more powerful Arduino, everything is nothong.
 
 ## about `./test`
 The folder has three C++ source file, they are:
 ### main_gxf.cpp:
 This is a project with ssd1306 library.
+
 because of high ram utilization(91.3%), I abandoned it.
+
 when I used u8glib ,the utilization is 38.7%.
 ### main_u8g2.cpp:
 This is a project with u8g2 library(the more powerful u8glib)
+
 because of high ram utilization(104%), I abandoned it
+
 It's terrible, It seems that I should change my arduino
+
 when I used u8glib ,the utilization is 38.7%,it's ok.
 ### main_u8g2lib.cpo:
 This is a project with u8glib library.
+
 because of high ram utilization(38.7%), I am using it noew.
+
 It has poor performance, but it's enough.
-The drawback is that the u8glib/utility/u8g_rot.c(line 48) has an warning)
+
+The drawback is that the u8glib/utility/u8g_rot.c(line 48) has an warning
+
 The developer said that it can be ignored.
+
 https://github.com/olikraus/u8glib/issues/366
 
 # usage
