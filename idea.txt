@@ -1,0 +1,15 @@
+  When do I need to change the value?
+  1. Currently there are no pages and no sub-pages;
+  2. The developer set up this function for this page;
+  3. The user press a key.
+  
+  What happens when the value is changed?
+  1. Modify the value;
+  2. Display the result of modification;
+  3. Back to the current page.
+
+  How to build a page ID system? What are the requirements of the page ID system?
+  1. Knowing the label of the current page, we should be able to know the child page and the parent page of the current page ID.
+  2. The ID of the page itself should be easy for program to store and read, and it is best to store with a variable.
+  3. The ID of the page should satisfy people's general thinking mode as far as possible, 
+  so that ordinary users can see the hierarchical relationship at a glance.
