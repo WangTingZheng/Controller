@@ -1,4 +1,4 @@
-# Controller for arduino
+# Controller for Arduino
 **I am sorry to telling you that I haven't tested this project in my arduino, but it has been passed builting in vscode with PlatformIO**
 # install
 - vscode
