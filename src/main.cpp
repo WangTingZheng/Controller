@@ -1,3 +1,11 @@
+/*
+  This is a project with u8glib library.
+  because of high ram utilization(38.7%), I am using it noew.
+  It has poor performance, but it's enough.
+  The drawback is that the u8glib/utility/u8g_rot.c(line 48) has an warning)
+  The developer said that it can be ignored.
+  https://github.com/olikraus/u8glib/issues/366
+ */
 #include <Arduino.h>
 #include <U8glib.h>
 #include <IRremote.h>   //IR receiver
