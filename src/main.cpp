@@ -1,18 +1,9 @@
-/*
-  This is a project with u8glib library.
-  because of high ram utilization(38.7%), I am using it noew.
-  It has poor performance, but it's enough.
-  The drawback is that the u8glib/utility/u8g_rot.c(line 48) has an warning)
-  The developer said that it can be ignored.
-  https://github.com/olikraus/u8glib/issues/366
- */
 #include <Arduino.h>
 #include <U8glib.h>
 #include <IRremote.h>   //IR receiver
-#include <avr/pgmspace.h>
-#include <Tree.h>
-
-const unsigned long HEXN[21]={ //mini remote control key hex id
+#define line 15
+#define column 10
+long HEXN[21]={ //mini remote control key hex id
  0xFD00FF,0xFD807F,0xFD40BF
 ,0xFD20DF,0xFDA05F,0xFD609F
 ,0xFD10EF,0xFD906F,0xFD50AF
@@ -21,34 +12,35 @@ const unsigned long HEXN[21]={ //mini remote control key hex id
 ,0xFD28D7,0xFDA857,0xFD6897
 ,0xFD18E7,0xFD9867,0xFD58A7
 }; 
+const char Number[10]={'0','1','2','3','4','5','6','7','8','9'};
+int speedInput[10];
+int speedInputFlag=0;
 
-String Name[21]={  //mini remote control key name
-  "power",
-  "vol+",
-  "func",
-  "playBack",
-  "playStop",
-  "playForward",
-  "down",
-  "vol-",
-  "up",
-  "0",
-  "EQ",
-  "replay",
-  "1","2","3","4","5","6","7","8","9"
-};
 int RECV_PIN = 11;   //IR revicer pin
-int D3 = 3;          //interrupt pin
-int D2 =2;           //interrupt pin
 long  controller=0;    // storage key hex id
-char page[MaxPage]={"1"};         //page number now
+int speed=100;
+int delaymsloop;
+
 IRrecv irrecv(RECV_PIN); 
 decode_results results;
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE|U8G_I2C_OPT_DEV_0);	// I2C / TWI 
+int flag;
+int number;
 
-int D4=4;// switch to led,when you press playshop at page 1.1,led will change it state
-
-
+void speedInputInit(){
+   speedInputFlag=0;
+  for(int i=0;i<10;i++){                         //init speedInput
+    speedInput[i]=-1;
+  }
+}
+int idToNu(long id){
+  for(int i=0;i<21;i++){
+    if(HEXN[i]==id){
+      return i;
+    }
+  }
+  return -1;
+}
 void u8glibSet(){
   if ( u8g.getMode() == U8G_MODE_R3G3B2 ) {
     u8g.setColorIndex(255);     // white
@@ -63,71 +55,107 @@ void u8glibSet(){
     u8g.setHiColorByRGB(255,255,255);
   }
 }
-long NumToHex(int n){
-  return pgm_read_byte(&HEXN[n]);
-}
 
-void PageS(char *Page){              //show page with gui code
+
+void page_1(){
   u8g.setFont(u8g_font_unifont);
-  if(!strcmp(Page,"1"))
-     u8g.drawStr( 0, 22, "Hello World!");
-  else if(!strcmp(Page,"1.1")){
-     u8g.drawStr( 0, 22, "yes!");
-  }
-}
-/*
-String HexToName(long H){ 
-  for(int i=1;i<21;i++){
-    if(HEXN[i]==H){
-      return Name[i];
-    }
-  }
-}
-long NameToHex(String N){
-  for(int i=1;i<21;i++){
-    if(Name[i]==N){
-      return HEXN[i];
-    }
-  }
-}*/
-void keyChange(){                     //interrupt function
-    if(!strcmp(page,"1")&&controller==NumToHex(4)){    // you press playStop button when your screen is page 1              
-      strcpy(page,"1.1");   //set page flag to 1.1
-    }
-    if(!strcmp(page,"1.1")&&controller==NumToHex(3)){  //your press playback button when your screen is page 1.1                     
-      strcpy(page,"1");  //set page flag to 1
-    }
-    if(digitalRead(D2)==LOW)
-    digitalWrite(D2,HIGH);        //trigger inturrpt
-    else digitalWrite(D2,LOW);
+  u8g.drawStr(0, line*1, "May I help you?");
+  u8g.drawStr(0, line*2, "1.modify speed.");
+  u8g.drawStr(0 ,line*3, "2.read speed.");
 }
 
-void valueChange(){
-     if(!strcmp(page,"1.1")&&controller==NumToHex(4)){
-       if(digitalRead(D4)==HIGH)
-        digitalWrite(D4,LOW);
-        else digitalWrite(D4,HIGH);
-     }
+void page_1_1(){
+  u8g.setFont(u8g_font_unifont);
+  u8g.drawStr(0, line*1, "Enter the speed:");
 }
 
-void setup(){         
-  u8glibSet();                      
-  pinMode(D3,INPUT);                   //set d3 mode(d3 is interrupt pin)
-  pinMode(D2,INPUT);
-  pinMode(D4,OUTPUT);
+void page_1_1_1(){
+  u8g.setFont(u8g_font_unifont);
+  u8g.drawStr(0, line*1, "change done!");
+}
+void page_1_2(){
+  
+  u8g.setFont(u8g_font_unifont);
+  u8g.drawStr( 0, line*1, "the speed is:");
+  u8g.setPrintPos(0, line*2);
+  u8g.print(speed);
+}
+void numberPress(){
+      speedInput[speedInputFlag]=idToNu(controller)-11;
+      if(speedInputFlag==10){
+        u8g.firstPage();
+        do{
+            u8g.drawStr(0,line,"out of length.");
+        }while(u8g.nextPage());
+        speedInputInit();
+        flag=1;
+      }
+      else{
+        //speedInputFlag=speedInputFlag+1;
+        u8g.firstPage();
+        do{
+          u8g.setPrintPos(0,line*1);
+          u8g.print(idToNu(controller)-11);
+        }while(u8g.nextPage());
+      }
+}
+void runtest(int n){
+    switch (n){
+      case 1:{
+        u8g.firstPage();  
+        do {
+            page_1();
+        }while( u8g.nextPage() );
+        break;
+      }
+      case 2:{
+        u8g.firstPage();  
+        do {
+            page_1_1();
+        }while( u8g.nextPage() );
+        break;
+      }
+      case 3:{
+        u8g.firstPage();  
+        do {
+            page_1_2();
+        }while( u8g.nextPage() );
+        break;
+      }
+      case 4:{
+        u8g.firstPage();  
+        do {
+            page_1_1_1();
+        }while( u8g.nextPage());
+        break;
+      }
+      case 5:{
+        numberPress();
+        break;
+      }
+    }
+  }
+void setup(){      
+  flag=1;   
+  u8glibSet();      
   delay(500);                                    //I don't know why it is here
   irrecv.enableIRIn();                           //enable IR revicer 
-  attachInterrupt(1,keyChange,CHANGE);         //set interrupt pin,set interrupt function,set interrupt mode(Triggered when changing)
-  attachInterrupt(0,valueChange,CHANGE); 
+  speedInputInit();
 }
 
-void loop() {                
-   PageS(page);                         //show page acconding to flag (when flag changed,page would be changed)
-   if (irrecv.decode(&results)) {   //if mini remote controller's button is pressed
-      controller=results.value;     //storage key id
-      if(digitalRead(D3)==LOW)
-      digitalWrite(D3,HIGH);        //trigger inturrpt
-      else digitalWrite(D3,LOW);
-      irrecv.resume();             //resume IR revicer
-   }
+
+void loop() {
+   if (irrecv.decode(&results)) {  
+        controller=results.value;     //storage key id
+        if(flag==1&&controller==HEXN[12]) flag=2;
+        else if(flag==1&&controller==HEXN[13]) flag=3;
+        else if(flag==2&&controller==HEXN[3]) flag=1;   //back
+        else if(flag==2&&controller==HEXN[4]) {flag=4;speedInputInit();}   //go in
+        else if(flag==2&&(idToNu(controller)>=12)) flag=5;  //if you press number
+        else if(flag==3&&controller==HEXN[3]) flag=1;
+        else if(flag==3&&controller==HEXN[3]) flag=1;
+        else if(flag==4) flag=1;
+        irrecv.resume();  
+  }
+  runtest(flag);
 }

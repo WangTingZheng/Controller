@@ -121,8 +121,13 @@ void setup(){
   attachInterrupt(0,valueChange,CHANGE); 
 }
 
-void loop() {                
-   PageS(page);                         //show page acconding to flag (when flag changed,page would be changed)
+void loop() {    
+   u8g.firstPage();  
+  do {
+       PageS(page); 
+  }
+  while( u8g.nextPage() );            
+                        //show page acconding to flag (when flag changed,page would be changed)
    if (irrecv.decode(&results)) {   //if mini remote controller's button is pressed
       controller=results.value;     //storage key id
       if(digitalRead(D3)==LOW)
