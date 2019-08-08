@@ -37,6 +37,8 @@ install:
 
 script:
      - platformio run
+     - git remote add gitee git@gitee.com:wangtingzheng/controller.git
+     - git push -u gitee master
 
 
 #
