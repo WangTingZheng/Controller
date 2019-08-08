@@ -1,8 +1,8 @@
 # Controller for Arduino
 [![Build Status](https://travis-ci.com/WangTingZheng/Controller.svg?branch=master)](https://travis-ci.com/WangTingZheng/Controller)
 # install
-- vscode
-- PlatformIO IDE for vscode
+- [vscode](https://code.visualstudio.com/)
+- [PlatformIO IDE for vscode](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide)
 # configure
 - run 
 ```git
@@ -15,7 +15,7 @@ to clone my project to your computer.
 - import my project
 - configure project setting
 
-open `.vscode/c_cpp_properties.json`, you can fond this:
+open `.vscode/c_cpp_properties.json`, you can find this:
 ```c
   "includePath": [
                 "c:/Users/王听正/Documents/PlatformIO/Projects/controller/include",
@@ -36,6 +36,39 @@ open `.vscode/c_cpp_properties.json`, you can fond this:
             ],
 ```
 fix the location which is include `./lib`, this is the library folder.
+- set your IR remote button id
+new a project with Arduino IDE and copy this code:
+```arduino
+#include <IRremote.h>     // IRremote库声明  
+int RECV_PIN = 11;        //定义红外接收器的引脚为11  
+IRrecv irrecv(RECV_PIN);   
+decode_results results;   //解码结果放在 decode results结构的 result中
+void setup()  {  
+      Serial.begin(9600);  
+      irrecv.enableIRIn(); // 启动接收器  
+}  
+void loop() {  
+	  if (irrecv.decode(&results)) { //解码成功，收到一组红外讯号   
+	    Serial.println(results.value, HEX);//以16进制换行输出接收代码  
+	    irrecv.resume(); // 接收下一个值  
+	  }  
+	  delay(100);  
+}  
+```
+of course, if you use PlatformIO, you should add `#include <Arduino.h>` in font of this code  
+press every button and write it down, and then, switch this part of my project:
+``` c
+long HEXN[21]={     //mini remote control key hex id
+ 0xFD00FF,0xFD807F,0xFD40BF
+,0xFD20DF,0xFDA05F,0xFD609F
+,0xFD10EF,0xFD906F,0xFD50AF
+,0xFD30CF,0xFDB04F,0xFD708F
+,0xFD08F7,0xFD8877,0xFD48B7
+,0xFD28D7,0xFDA857,0xFD6897
+,0xFD18E7,0xFD9867,0xFD58A7
+}; 
+```
+The order is from  top to bottom, from left to right
 - press the platformio build under the vscode bar
 - if everything is ok, the building will be passed.
 
