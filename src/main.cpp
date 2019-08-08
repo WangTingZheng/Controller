@@ -192,7 +192,7 @@ void page_1_1(){
   else if(numberP>11){
     number_press=numberP-11;
     if(key[10]!=10){
-      key[key[10]]=numberP-11;
+      key[key[10]]=number_press;
       key[10]++;
     }else {           // be fulled
       key[10]=0;
