@@ -3,6 +3,7 @@
 #include <IRremote.h>   //IR receiver
 #define line 15
 #define column 10
+#define maxKey 50
 long HEXN[21]={ //mini remote control key hex id
  0xFD00FF,0xFD807F,0xFD40BF
 ,0xFD20DF,0xFDA05F,0xFD609F
@@ -12,35 +13,21 @@ long HEXN[21]={ //mini remote control key hex id
 ,0xFD28D7,0xFDA857,0xFD6897
 ,0xFD18E7,0xFD9867,0xFD58A7
 }; 
-const char Number[10]={'0','1','2','3','4','5','6','7','8','9'};
-int key[11]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0};  //key[10] is flag
-int speedInput[10];
-int speedInputFlag=0;
+
+int key[maxKey+1];  //key[10] is flag
 
 int RECV_PIN = 11;   //IR revicer pin
 long  controller=0;    // storage key hex id
+int   controllerF=0;
 int speed=100;
-int delaymsloop;
+int flag;
+int xxx;
+
 
 IRrecv irrecv(RECV_PIN); 
 decode_results results;
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE|U8G_I2C_OPT_DEV_0);	// I2C / TWI 
-int flag;
-int number;
-int idN;
-int powerOfTen(int n){
-  int resu=1;
-  for(int i=0;i<n;i++){
-      resu=resu*10;
-  }
-  return resu;
-}
-void speedInputInit(){
-   speedInputFlag=0;
-  for(int i=0;i<10;i++){                         //init speedInput
-    speedInput[i]=-1;
-  }
-}
+
 int idToNu(long id){
   for(int i=0;i<21;i++){
     if(HEXN[i]==id){
@@ -49,6 +36,8 @@ int idToNu(long id){
   }
   return -1;
 }
+
+
 void u8glibSet(){
   if ( u8g.getMode() == U8G_MODE_R3G3B2 ) {
     u8g.setColorIndex(255);     // white
@@ -69,10 +58,10 @@ void page_1(){
   u8g.drawStr(0, line*1, "May I help you?");
   u8g.drawStr(0, line*2, "1.modify speed.");
   u8g.drawStr(0 ,line*3, "2.read speed.");
+  key[maxKey]=0;
 }
 
 void page_1_1_1(){
-  
   u8g.drawStr(0, line*1, "change done!");
 }
 void page_1_2(){
@@ -148,6 +137,7 @@ void draw_Input(int l,int c) {
       u8g.drawStr( 0, 60, " 0     .");
     }
 }
+
 int thePower(int z){
   int temp=1;
   for(int q=0;q<z;q++){
@@ -155,62 +145,80 @@ int thePower(int z){
   }
   return temp;
 }
+void updateValue(int add){
+  if(key[maxKey]!=maxKey){
+    key[key[maxKey]]=add;
+    key[maxKey]++;
+  }else {
+    key[maxKey]=0;
+  }
+}
+void display_Side(){
+    u8g.drawStr(80,15, "|Enter");
+    u8g.drawStr(80,30, "|the ");
+    u8g.drawStr(80,45, "|speed");
+}
+
+int findID(){
+  for(int l=0;l<21;l++){
+      if(controller==HEXN[l]){
+          return l;
+      }
+    }
+    return -1;
+}
+void modify(int *address){         //modify your value in your project, usage: modify(&valueName);
+    int valueK;
+    int www;
+    valueK=0;
+    www=key[maxKey]-1;
+    for(int n=www;n>0;n--){
+        valueK+=key[n]*thePower(key[maxKey]-n-1);
+    }
+   *address=valueK;   
+}
 void page_1_1(){
   int number_press;
   int x,y;
-  int value;
-  //int tmp;
   int numberP=-1;  //the buuton you pressed id
-  for(int l=0;l<21;l++){
-    if(controller==HEXN[l]){
-        numberP=l;
+  if(controllerF==1){
+    numberP=findID();
+    display_Side();
+    if(numberP==9){
+        draw_Input(4,1);
+        updateValue(0);
     }
-  }
-  u8g.drawStr(80,15, "|Enter");
-  u8g.drawStr(80,30, "|the ");
-  u8g.drawStr(80,45, "|speed");
-  if(numberP==9){
-      draw_Input(4,1);
-      if(key[10]!=10){
-        key[key[10]]=0;
-        key[10]++;
-      }else {
-        key[10]=0;
+    else if(numberP==4){  //confirm
+        flag=4;
+        modify(&speed);
+    }
+    else if(numberP==3){ //cansle
+          flag=1;
+          key[maxKey]=0;
+    }
+    else if(numberP>11){
+      number_press=numberP-11;
+      if(xxx==1) {updateValue(number_press); xxx=0;}
+      if((number_press%3)!=0){
+          x=number_press/3+1;
+          y=number_press%3;
       }
-  }
-  else if(numberP==4){  //confirm
-      flag=4;
-      for(int n=key[10];n>=0;n--){
-          value+=key[n]*thePower(key[10]-n);
+      else {
+          x=number_press/3;
+          y=3;
       }
-     speed=value;
-  }
-  else if(numberP==3){ //cansle
-        flag=1;
-        key[10]=0;
-  }
-  else if(numberP>11){
-    number_press=numberP-11;
-    if(key[10]!=10){
-      key[key[10]]=number_press;
-      key[10]++;
-    }else {           // be fulled
-      key[10]=0;
     }
-    if((number_press%3)!=0){
-        x=number_press/3+1;
-        y=number_press%3;
+    else{
+      x=0;
+      y=0;
     }
-    else {
-        x=number_press/3;
-        y=3;
-    }
+    draw_Input(x,y);
   }
   else{
-    x=0;
-    y=0;
+    controllerF=1;
   }
-  draw_Input(x,y);
+  u8g.setPrintPos(120,60);
+  u8g.print(numberP);
 }
 void runtest(int n){
     switch (n){
@@ -247,17 +255,14 @@ void runtest(int n){
 void setup(){      
   flag=1;   
   u8glibSet();      
-  delay(500);                                    //I don't know why it is here
   irrecv.enableIRIn();                           //enable IR revicer 
-  speedInputInit();
-  idN=-1;
+  key[maxKey]=0;
 }
-
-
 void loop() {
+xxx=0;
    if (irrecv.decode(&results)) {  
         controller=results.value;     //storage key id
-        idN=idToNu(controller);
+        xxx=1;
         if(flag==1&&controller==HEXN[12]) flag=2;
         else if(flag==1&&controller==HEXN[12]) flag=2;
         else if(flag==1&&controller==HEXN[13]) flag=3;
