@@ -36,7 +36,8 @@ open `.vscode/c_cpp_properties.json`, you can find this:
             ],
 ```
 fix the location which is include `./lib`, this is the library folder.
-- set your IR remote button id
+- set your IR remote button id  
+
 new a project with Arduino IDE and copy this code:
 ```arduino
 #include <IRremote.h>     // IRremote库声明  
@@ -56,6 +57,8 @@ void loop() {
 }  
 ```
 of course, if you use PlatformIO, you should add `#include <Arduino.h>` in font of this code  
+- open serial monitor(I don't know how to use it in PlatformIO, maybe in the cli?)
+
 press every button and write it down, and then, switch this part of my project:
 ``` c
 long HEXN[21]={     //mini remote control key hex id
@@ -69,7 +72,7 @@ long HEXN[21]={     //mini remote control key hex id
 }; 
 ```
 The order is from  top to bottom, from left to right
-- press the platformio build under the vscode bar
+- press the PlatformIO build under the vscode bar
 - if everything is ok, the building will be passed.
 
 # hardware
