@@ -1,18 +1,10 @@
-/*
-  This is a project with u8glib library.
-  because of high ram utilization(38.7%), I am using it noew.
-  It has poor performance, but it's enough.
-  The drawback is that the u8glib/utility/u8g_rot.c(line 48) has an warning)
-  The developer said that it can be ignored.
-  https://github.com/olikraus/u8glib/issues/366
- */
 #include <Arduino.h>
 #include <U8glib.h>
 #include <IRremote.h>   //IR receiver
-#include <avr/pgmspace.h>
-#include <Tree.h>
-
-const unsigned long HEXN[21]={ //mini remote control key hex id
+#define line 15
+#define column 10
+#define maxKey 50   //the max length of the array which include the match you input
+long HEXN[21]={     //mini remote control key hex id
  0xFD00FF,0xFD807F,0xFD40BF
 ,0xFD20DF,0xFDA05F,0xFD609F
 ,0xFD10EF,0xFD906F,0xFD50AF
@@ -22,34 +14,21 @@ const unsigned long HEXN[21]={ //mini remote control key hex id
 ,0xFD18E7,0xFD9867,0xFD58A7
 }; 
 
-String Name[21]={  //mini remote control key name
-  "power",
-  "vol+",
-  "func",
-  "playBack",
-  "playStop",
-  "playForward",
-  "down",
-  "vol-",
-  "up",
-  "0",
-  "EQ",
-  "replay",
-  "1","2","3","4","5","6","7","8","9"
-};
+int key[maxKey+1];  //key[10] is flag
+
 int RECV_PIN = 11;   //IR revicer pin
-int D3 = 3;          //interrupt pin
-int D2 =2;           //interrupt pin
 long  controller=0;    // storage key hex id
-char page[MaxPage]={"1"};         //page number now
+int   speed=100;      //the value i want to modify
+int   flag;           //the flag target differernt page
+int   updateF;       //the updateValue's flag
+
+
 IRrecv irrecv(RECV_PIN); 
 decode_results results;
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE|U8G_I2C_OPT_DEV_0);	// I2C / TWI 
 
-int D4=4;// switch to led,when you press playshop at page 1.1,led will change it state
 
-
-void u8glibSet(){
+void u8glibSet(){                                //oled screen init
   if ( u8g.getMode() == U8G_MODE_R3G3B2 ) {
     u8g.setColorIndex(255);     // white
   }
@@ -63,76 +42,215 @@ void u8glibSet(){
     u8g.setHiColorByRGB(255,255,255);
   }
 }
-long NumToHex(int n){
-  return pgm_read_byte(&HEXN[n]);
-}
 
-void PageS(char *Page){              //show page with gui code
+void page_1(){                               
   u8g.setFont(u8g_font_unifont);
-  if(!strcmp(Page,"1"))
-     u8g.drawStr( 0, 22, "Hello World!");
-  else if(!strcmp(Page,"1.1")){
-     u8g.drawStr( 0, 22, "yes!");
-  }
-}
-/*
-String HexToName(long H){ 
-  for(int i=1;i<21;i++){
-    if(HEXN[i]==H){
-      return Name[i];
-    }
-  }
-}
-long NameToHex(String N){
-  for(int i=1;i<21;i++){
-    if(Name[i]==N){
-      return HEXN[i];
-    }
-  }
-}*/
-void keyChange(){                     //interrupt function
-    if(!strcmp(page,"1")&&controller==NumToHex(4)){    // you press playStop button when your screen is page 1              
-      strcpy(page,"1.1");   //set page flag to 1.1
-    }
-    if(!strcmp(page,"1.1")&&controller==NumToHex(3)){  //your press playback button when your screen is page 1.1                     
-      strcpy(page,"1");  //set page flag to 1
-    }
-    if(digitalRead(D2)==LOW)
-    digitalWrite(D2,HIGH);        //trigger inturrpt
-    else digitalWrite(D2,LOW);
+  u8g.drawStr(0, line*1, "May I help you?");
+  u8g.drawStr(0, line*2, "1.modify speed.");
+  u8g.drawStr(0 ,line*3, "2.read speed.");
+  key[maxKey]=0;                             //reroad input data flag
 }
 
-void valueChange(){
-     if(!strcmp(page,"1.1")&&controller==NumToHex(4)){
-       if(digitalRead(D4)==HIGH)
-        digitalWrite(D4,LOW);
-        else digitalWrite(D4,HIGH);
-     }
+void page_1_1_1(){
+  u8g.drawStr(0, line*1, "change done!");
+}
+void page_1_2(){
+  u8g.setFont(u8g_font_unifont);
+  u8g.drawStr( 0, line*1, "the speed is:");
+  u8g.setPrintPos(0, line*2);
+  u8g.print(speed);  
 }
 
-void setup(){         
-  u8glibSet();                      
-  pinMode(D3,INPUT);                   //set d3 mode(d3 is interrupt pin)
-  pinMode(D2,INPUT);
-  pinMode(D4,OUTPUT);
-  delay(500);                                    //I don't know why it is here
+void draw_Input(int l,int c) {
+  u8g.setFont(u8g_font_unifont);
+  if(l==1){                                        //if you want display "#" in line 1
+      u8g.drawStr( 0, 30, " 4  5  6");
+      u8g.drawStr( 0, 45, " 7  8  9");
+      u8g.drawStr( 0, 60, " 0     .");
+      if(c==1){                                 //if you want to display "# in font of column  1,it's number:1
+          u8g.drawStr( 0, 15, "#1  2  3");
+      }
+      else if(c==2){
+          u8g.drawStr( 0, 15, " 1 #2  3");
+      }
+      else if(c==3){
+          u8g.drawStr( 0, 15, " 1  2 #3");
+      }
+  }
+  else if(l==2){
+    u8g.drawStr( 0, 15, " 1  2  3");
+    u8g.drawStr( 0, 45, " 7  8  9");
+    u8g.drawStr( 0, 60, " 0     .");
+    if(c==1){
+        u8g.drawStr( 0, 30, "#4  5  6");
+    }
+    else if(c==2){
+        u8g.drawStr( 0, 30, " 4 #5  6");
+    }
+    else if(c==3){
+        u8g.drawStr( 0, 30, " 4  5 #6");
+    }
+  }
+  else if (l==3){
+    u8g.setFont(u8g_font_unifont);
+    u8g.drawStr( 0, 15, " 1  2  3");
+    u8g.drawStr( 0, 30, " 4  5  6");
+    u8g.drawStr( 0, 60, " 0     .");
+    if(c==1){
+         u8g.drawStr( 0, 45, "#7  8  9");
+    }
+    else if(c==2){
+         u8g.drawStr( 0, 45, " 7 #8  9");
+    }
+    else if(c==3){
+         u8g.drawStr( 0, 45, " 7  8 #9");
+    }
+  }
+  else if(l==4){
+      u8g.drawStr( 0, 15, " 1  2  3");
+      u8g.drawStr( 0, 30, " 4  5  6");
+      u8g.drawStr( 0, 45, " 7  8  9");
+      if(c==1){
+         u8g.drawStr( 0, 60, "#0     .");
+      }
+      else if(c==2){
+         u8g.drawStr( 0, 60, " 0 #   .");
+      }
+      else if(c==3){
+         u8g.drawStr( 0, 60, " 0    #.");
+      }
+  }
+  else {
+      u8g.drawStr( 0, 15, " 1  2  3");
+      u8g.drawStr( 0, 30, " 4  5  6");
+      u8g.drawStr( 0, 45, " 7  8  9");
+      u8g.drawStr( 0, 60, " 0     .");
+    }
+}
+
+int thePower(int z){   //calculate the 10^z
+  int temp=1;
+  for(int q=0;q<z;q++){
+    temp *=10;
+  }
+  return temp;
+}
+
+void updateValue(int add){   //add one value behind the array "key"
+  if(key[maxKey]!=maxKey){
+    key[key[maxKey]]=add;
+    key[maxKey]++;
+  }else {
+    key[maxKey]=0;
+  }
+}
+void display_Side(){                    //display the side which we don't change it
+    u8g.drawStr(80,15, "|Enter");
+    u8g.drawStr(80,30, "|the ");
+    u8g.drawStr(80,45, "|speed");
+}
+
+int findID(){                      //find the id which you press now,according to the value of "controller"
+  for(int l=0;l<21;l++){
+      if(controller==HEXN[l]){
+          return l;
+      }
+    }
+    return -1;
+}
+void modify(int *address){         //modify your value in your project, usage: modify(&valueName);
+    int valueK;
+    int www;
+    valueK=0;
+    www=key[maxKey]-1;
+    for(int n=www;n>0;n--){
+        valueK+=key[n]*thePower(key[maxKey]-n-1);
+    }
+   *address=valueK;   
+}
+void page_1_1(){
+  int number_press;
+  int x,y;
+  int numberP=-1;  //the buuton you pressed id
+  numberP=findID();     //find the id of your pressed button
+  display_Side();      //display the side
+  if(numberP==9){       //if your pressed number "0"
+      draw_Input(4,1);  //draw the picture which the "#" in font of 0
+      updateValue(0);   //add 0 to the array key to modify in the reasonable time
+  }
+  else if(numberP==4){  //confirm
+      flag=4;            //the next page is page_1_1_1
+      modify(&speed);   //modify the value speed
+  }
+  else if(numberP==3){ //cansle
+        flag=1;        //next value is page_1
+  }
+  else if(numberP>11){  //if you pressed number 
+    number_press=numberP-11; //get the real number 
+    if(updateF==1) {updateValue(number_press); updateF=0;}
+    if((number_press%3)!=0){  //get the number's position
+        x=number_press/3+1;
+        y=number_press%3;
+    }
+    else {
+        x=number_press/3;
+        y=3;
+    }
+  }
+  else{
+    x=0;
+    y=0;
+  }
+  draw_Input(x,y);  //display number 
+} 
+
+void runtest(int n){
+    switch (n){
+      case 1:{
+        u8g.firstPage();  
+        do {
+            page_1();
+        }while( u8g.nextPage() );
+        break;
+      }
+      case 2:{
+       u8g.firstPage();  
+       do {
+            page_1_1();
+        }while( u8g.nextPage() );
+        break;
+      }
+      case 3:{
+        u8g.firstPage();  
+        do {
+            page_1_2();
+        }while( u8g.nextPage() );
+        break;
+      }
+      case 4:{
+        u8g.firstPage();  
+        do {
+            page_1_1_1();
+        }while( u8g.nextPage());
+        break;
+      }
+    }
+}
+void setup(){      
+  flag=1;   
+  u8glibSet();      
   irrecv.enableIRIn();                           //enable IR revicer 
-  attachInterrupt(1,keyChange,CHANGE);         //set interrupt pin,set interrupt function,set interrupt mode(Triggered when changing)
-  attachInterrupt(0,valueChange,CHANGE); 
 }
-
-void loop() {    
-   u8g.firstPage();  
-  do {
-       PageS(page); 
+void loop() {
+   updateF=0;
+   if (irrecv.decode(&results)) {  
+        controller=results.value;     //storage key id
+        updateF=1;
+        if(flag==1&&controller==HEXN[12]) flag=2;     //if we are in page_1, and you press number"1", the next page is page_1_1
+        else if(flag==1&&controller==HEXN[13]) flag=3; //in page_1,pressed number "2", the next is page_1_2;
+        else if(flag==3&&controller==HEXN[3])  flag=1; //in page_1_2, pressed button "playback", the next is page_1
+        else if(flag==4){delay(300);flag=1;}    //in page_1_1_1,pressed button "play", the next is page_1
+        irrecv.resume();  
   }
-  while( u8g.nextPage() );            
-                        //show page acconding to flag (when flag changed,page would be changed)
-   if (irrecv.decode(&results)) {   //if mini remote controller's button is pressed
-      controller=results.value;     //storage key id
-      if(digitalRead(D3)==LOW)
-      digitalWrite(D3,HIGH);        //trigger inturrpt
-      else digitalWrite(D3,LOW);
-      irrecv.resume();             //resume IR revicer
-   }
+  runtest(flag);
 }

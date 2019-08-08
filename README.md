@@ -6,7 +6,6 @@
 # configure
 - run 
 ```git
-
 git clone https://github.com/wangtingzheng/controller.git
 ```
 to clone my project to your computer.
