@@ -13,6 +13,7 @@ long HEXN[21]={ //mini remote control key hex id
 ,0xFD18E7,0xFD9867,0xFD58A7
 }; 
 const char Number[10]={'0','1','2','3','4','5','6','7','8','9'};
+int key[11]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0};  //key[10] is flag
 int speedInput[10];
 int speedInputFlag=0;
 
@@ -26,7 +27,14 @@ decode_results results;
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE|U8G_I2C_OPT_DEV_0);	// I2C / TWI 
 int flag;
 int number;
-
+int idN;
+int powerOfTen(int n){
+  int resu=1;
+  for(int i=0;i<n;i++){
+      resu=resu*10;
+  }
+  return resu;
+}
 void speedInputInit(){
    speedInputFlag=0;
   for(int i=0;i<10;i++){                         //init speedInput
@@ -56,7 +64,6 @@ void u8glibSet(){
   }
 }
 
-
 void page_1(){
   u8g.setFont(u8g_font_unifont);
   u8g.drawStr(0, line*1, "May I help you?");
@@ -64,40 +71,146 @@ void page_1(){
   u8g.drawStr(0 ,line*3, "2.read speed.");
 }
 
-void page_1_1(){
-  u8g.setFont(u8g_font_unifont);
-  u8g.drawStr(0, line*1, "Enter the speed:");
-}
-
 void page_1_1_1(){
-  u8g.setFont(u8g_font_unifont);
+  
   u8g.drawStr(0, line*1, "change done!");
 }
 void page_1_2(){
-  
   u8g.setFont(u8g_font_unifont);
   u8g.drawStr( 0, line*1, "the speed is:");
   u8g.setPrintPos(0, line*2);
   u8g.print(speed);
 }
-void numberPress(){
-      speedInput[speedInputFlag]=idToNu(controller)-11;
-      if(speedInputFlag==10){
-        u8g.firstPage();
-        do{
-            u8g.drawStr(0,line,"out of length.");
-        }while(u8g.nextPage());
-        speedInputInit();
+
+void draw_Input(int l,int c) {
+  u8g.setFont(u8g_font_unifont);
+  if(l==1){
+    u8g.drawStr( 0, 30, " 4  5  6");
+    u8g.drawStr( 0, 45, " 7  8  9");
+    u8g.drawStr( 0, 60, " 0     .");
+    if(c==1){
+        u8g.drawStr( 0, 15, "#1  2  3");
+    }
+    else if(c==2){
+        u8g.drawStr( 0, 15, " 1 #2  3");
+    }
+    else if(c==3){
+        u8g.drawStr( 0, 15, " 1  2 #3");
+    }
+  }
+  else if(l==2){
+    u8g.drawStr( 0, 15, " 1  2  3");
+    u8g.drawStr( 0, 45, " 7  8  9");
+    u8g.drawStr( 0, 60, " 0     .");
+    if(c==1){
+        u8g.drawStr( 0, 30, "#4  5  6");
+    }
+    else if(c==2){
+        u8g.drawStr( 0, 30, " 4 #5  6");
+    }
+    else if(c==3){
+        u8g.drawStr( 0, 30, " 4  5 #6");
+    }
+  }
+  else if (l==3){
+    u8g.setFont(u8g_font_unifont);
+    u8g.drawStr( 0, 15, " 1  2  3");
+    u8g.drawStr( 0, 30, " 4  5  6");
+    u8g.drawStr( 0, 60, " 0     .");
+    if(c==1){
+         u8g.drawStr( 0, 45, "#7  8  9");
+    }
+    else if(c==2){
+         u8g.drawStr( 0, 45, " 7 #8  9");
+    }
+    else if(c==3){
+         u8g.drawStr( 0, 45, " 7  8 #9");
+    }
+  }
+  else if(l==4){
+      u8g.drawStr( 0, 15, " 1  2  3");
+      u8g.drawStr( 0, 30, " 4  5  6");
+      u8g.drawStr( 0, 45, " 7  8  9");
+      if(c==1){
+         u8g.drawStr( 0, 60, "#0     .");
+      }
+      else if(c==2){
+         u8g.drawStr( 0, 60, " 0 #   .");
+      }
+      else if(c==3){
+         u8g.drawStr( 0, 60, " 0    #.");
+      }
+  }
+  else {
+      u8g.drawStr( 0, 15, " 1  2  3");
+      u8g.drawStr( 0, 30, " 4  5  6");
+      u8g.drawStr( 0, 45, " 7  8  9");
+      u8g.drawStr( 0, 60, " 0     .");
+    }
+}
+int thePower(int z){
+  int temp=1;
+  for(int q=0;q<z;q++){
+    temp *=10;
+  }
+  return temp;
+}
+void page_1_1(){
+  int number_press;
+  int x,y;
+  int value;
+  //int tmp;
+  int numberP=-1;  //the buuton you pressed id
+  for(int l=0;l<21;l++){
+    if(controller==HEXN[l]){
+        numberP=l;
+    }
+  }
+  u8g.drawStr(80,15, "|Enter");
+  u8g.drawStr(80,30, "|the ");
+  u8g.drawStr(80,45, "|speed");
+  if(numberP==9){
+      draw_Input(4,1);
+      if(key[10]!=10){
+        key[key[10]]=0;
+        key[10]++;
+      }else {
+        key[10]=0;
+      }
+  }
+  else if(numberP==4){  //confirm
+      flag=4;
+      for(int n=key[10];n>=0;n--){
+          value+=key[n]*thePower(key[10]-n);
+      }
+     speed=value;
+  }
+  else if(numberP==3){ //cansle
         flag=1;
-      }
-      else{
-        //speedInputFlag=speedInputFlag+1;
-        u8g.firstPage();
-        do{
-          u8g.setPrintPos(0,line*1);
-          u8g.print(idToNu(controller)-11);
-        }while(u8g.nextPage());
-      }
+        key[10]=0;
+  }
+  else if(numberP>11){
+    number_press=numberP-11;
+    if(key[10]!=10){
+      key[key[10]]=numberP-11;
+      key[10]++;
+    }else {           // be fulled
+      key[10]=0;
+    }
+    if((number_press%3)!=0){
+        x=number_press/3+1;
+        y=number_press%3;
+    }
+    else {
+        x=number_press/3;
+        y=3;
+    }
+  }
+  else{
+    x=0;
+    y=0;
+  }
+  draw_Input(x,y);
 }
 void runtest(int n){
     switch (n){
@@ -109,8 +222,8 @@ void runtest(int n){
         break;
       }
       case 2:{
-        u8g.firstPage();  
-        do {
+       u8g.firstPage();  
+       do {
             page_1_1();
         }while( u8g.nextPage() );
         break;
@@ -129,32 +242,27 @@ void runtest(int n){
         }while( u8g.nextPage());
         break;
       }
-      case 5:{
-        numberPress();
-        break;
-      }
     }
-  }
+}
 void setup(){      
   flag=1;   
   u8glibSet();      
   delay(500);                                    //I don't know why it is here
   irrecv.enableIRIn();                           //enable IR revicer 
   speedInputInit();
+  idN=-1;
 }
 
 
 void loop() {
    if (irrecv.decode(&results)) {  
         controller=results.value;     //storage key id
+        idN=idToNu(controller);
         if(flag==1&&controller==HEXN[12]) flag=2;
+        else if(flag==1&&controller==HEXN[12]) flag=2;
         else if(flag==1&&controller==HEXN[13]) flag=3;
-        else if(flag==2&&controller==HEXN[3]) flag=1;   //back
-        else if(flag==2&&controller==HEXN[4]) {flag=4;speedInputInit();}   //go in
-        else if(flag==2&&(idToNu(controller)>=12)) flag=5;  //if you press number
-        else if(flag==3&&controller==HEXN[3]) flag=1;
-        else if(flag==3&&controller==HEXN[3]) flag=1;
-        else if(flag==4) flag=1;
+        else if(flag==3&&controller==HEXN[3])  flag=1;
+        else if(flag==4){delay(300);flag=1;} 
         irrecv.resume();  
   }
   runtest(flag);
