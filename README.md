@@ -67,7 +67,7 @@ Vout-11
 - read values in the project in oled
 - modify values with IR controller
 
-![function.jpg](https://i.loli.net/2019/08/08/qrbTC4jdxlURVaP.jpg)
+![function.jpg](https://s2.ax1x.com/2019/08/08/e7BD6P.png)
 # Something Important
 ## about library
 - GFX(not recommend)
