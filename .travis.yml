@@ -37,12 +37,6 @@ install:
 
 script:
      - platformio run
-     - git remote add gitee git@gitee.com:wangtingzheng/controller.git
-     - yes
-     - git push -u gitee master
-     - yes
-     
-
 
 #
 # Template #2: The project is intended to be used as a library with examples.
