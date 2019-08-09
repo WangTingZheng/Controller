@@ -111,8 +111,8 @@ No need to connection, it's Wireless.
 IR reviver
 ```
 GND-GND
-VCC-5V
-Vout-11
+VCC-12
+Vout-13
 ```
 steering engine
 ```
@@ -131,16 +131,16 @@ control(Arduino)
 PowerUp
 ```
 GND-GND
-VCC-5V
-H-2
-L-3
+H-free
+L-2
+VCC-11
 ```
 Fire
 ```
-GND-GND
-VCC-5V
-H-4
-H-6
+GND-6
+VCC-3
+H-free
+L-5
 ```
 OutPut
 ```
