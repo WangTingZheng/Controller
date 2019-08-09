@@ -1,18 +1,11 @@
 #include <Arduino.h>
 #include <U8glib.h>
 #include <IRremote.h>   //IR receiver
-#include <Servo.h>
-
-Servo servo1; 
-Servo servo2;
-
 #define line 15
 #define column 10
 #define maxKey 50   //the max length of the array which include the match you input
 #define back 3
 #define in 4
-
-
 
 long HEXN[21]={     //mini remote control key hex id
  0xFD00FF,0xFD807F,0xFD40BF
@@ -25,12 +18,6 @@ long HEXN[21]={     //mini remote control key hex id
 }; 
 
 int key[maxKey+1];  //key[10] is flag
-
-const int servo1Pin=8;
-const int servo2Pin=9;
-
-int posOfServo1 = 90;
-int posOfServo2 = 90;
 
 int RECV_PIN = 11;   //IR revicer pin
 long  controller=0;    // storage key hex id
@@ -61,20 +48,7 @@ void u8glibSet(){                                //oled screen init
     u8g.setHiColorByRGB(255,255,255);
   }
 }
-
 //////////////////////////////////////////////////////////////////////////////////
-long  AlplaTransform1(long big){
-  return big/1.5-6;
-}
-long  AlplaTransform2(long big){
-  return big/1.5+102;
-}
-
-void setServoAlpla(int flag,long a){
-  if(flag==1)
-  servo1.write(AlplaTransform1(a));
-  else if(flag==2)servo2.write(AlplaTransform1(a));
-}
 int thePower(int z){   //calculate the 10^z
   int temp=1;
   for(int q=0;q<z;q++){
@@ -220,22 +194,11 @@ void page_modify(int * valueToM,int nextPage,int backPage){
   u8g.print(flag);
 } 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-long getAlpha1(){
-     long x;
-     x=d+alpha;
-     return x;
-}
-long getAlpha2(){
-     long y;
-     y=d-alpha;
-     return y; 
-}
 void toThePosition(){
-     setServoAlpla(1,getAlpha1());
-     setServoAlpla(2,getAlpha2());
+
 }
 void PowerUp(){
-     
+
 }
 void fire(){
 
@@ -371,25 +334,15 @@ void runtest(int n){
       
     }
 }
-void test(){
-  for(int i=0;i<90;i=i+0.1){
-      servo1.write(i);
-      delay(10);
-  }
-}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup(){      
   flag=1;   
   u8glibSet();      
-  irrecv.enableIRIn();   
-  servo1.attach(servo1Pin, 500, 2500); // pin8,
-  servo2.attach(servo2Pin, 500, 2500); // pin9
-  setServoAlpla(1,90);
+  irrecv.enableIRIn();                           //enable IR revicer 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
    updateF=0;
-   //servo2.write(20);  
    if (irrecv.decode(&results)) {  
         controller=results.value;     //storage key id
         updateF=1;

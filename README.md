@@ -3,6 +3,13 @@
 # install
 - [vscode](https://code.visualstudio.com/)
 - [PlatformIO IDE for vscode](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide)
+# hardware
+- Arduino uno
+- oled screen with `I2c` protocol and `ssd1306` control chip(four pin)
+- mini IR remote controller 
+- IR reviver
+- LD-27MG
+- Battery 7.4v 1500mah 20c|3.7v 2000mah 7.4wh
 # configure
 - run 
 ```git
@@ -72,14 +79,22 @@ long HEXN[21]={     //mini remote control key hex id
 }; 
 ```
 The order is from  top to bottom, from left to right
+- fix steering engine parameter
+
+find this in `main.cpp`
+```c
+long  AlplaTransform1(long big){
+  return big/1.5-6;
+}
+long  AlplaTransform2(long big){
+  return big/1.5+102;
+}
+```
+change the code after `return`, make should that your engine can turn to `big` degrees
 - press the PlatformIO build under the vscode bar
 - if everything is ok, the building will be passed.
 
-# hardware
-- Arduino uno
-- oled screen with `I2c` protocol and `ssd1306` control chip(four pin)
-- mini IR remote controller 
-- IR reviver
+
 # connect
 oled:
 ```
@@ -98,10 +113,23 @@ GND-GND
 VCC-5V
 Vout-11
 ```
+steering engine
+```
+GND-GND(battery)
+VCC-7.4v(battery)
+signal-8
+```
+
+```
+GND-GND(battery)
+VCC-7.4V(battery)
+signal-9
+```
 # function
 - some windows like drawer 
 - read values in the project in oled
 - modify values with IR controller
+- control two Steering engines
 
 ![function.jpg](https://s2.ax1x.com/2019/08/08/e7BD6P.png)
 # Something Important
