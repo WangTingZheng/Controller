@@ -317,11 +317,18 @@ void page_1_3(){
    u8g.drawStr(0, line*1, "To be launched");
    toThePosition();
    PowerUp();
+   u8g.setPrintPos(0,line*2);
+   u8g.print(flag);
+   flag=8;
 }
 void page_1_3_ok(){
+   delay(powerUpTime);
    u8g.setFont(u8g_font_unifont);
    u8g.drawStr(0, line*1, "Launched");
    fire();
+   u8g.setPrintPos(0,line*2);
+   u8g.print(flag);
+  //u8g.print();
 }
 
 void page_tips(){
@@ -448,9 +455,7 @@ void loop() {
         else if(flag==4&&controller==HEXN[12]) flag=5;
         else if(flag==4&&controller==HEXN[13]) flag=6;
         else if(flag==4&&controller==HEXN[back]) flag=1;
-        else if(flag==7&&controller==HEXN[in]) {flag=8;delay(5000);}
-        else if(flag==7&&controller==HEXN[back]) flag=1;
-
+        else if(flag==7) {flag=8;}
         else if(flag==8&&controller==HEXN[in]) flag=1;
         else if(flag==9&&controller==HEXN[in]) flag=1;
         irrecv.resume();  
