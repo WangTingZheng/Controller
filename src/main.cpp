@@ -11,6 +11,8 @@ Servo servo2;
 #define maxKey 50   //the max length of the array which include the match you input
 #define back 3
 #define in 4
+#define powerUpTime 2000 
+#define fireTime 2000
 
 
 
@@ -28,6 +30,10 @@ int key[maxKey+1];  //key[10] is flag
 
 const int servo1Pin=8;
 const int servo2Pin=9;
+const int relay_1_1 = 3;      //powerup
+const int relay_1_2 = 2;
+//const int relay_2_1 = 4;     //fire
+//const int relay_2_2 = 5;
 
 int posOfServo1 = 90;
 int posOfServo2 = 90;
@@ -63,6 +69,18 @@ void u8glibSet(){                                //oled screen init
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+
+void EAControl(int action,int status ){
+   if(action==1){
+      if(status==1){
+          pinMode(relay_1_2, OUTPUT);
+      }
+      else if(status==0){
+          pinMode(relay_1_2, INPUT);
+      }
+   }
+}
+
 long  AlplaTransform1(long big){
   return big/1.5-6;
 }
@@ -235,10 +253,17 @@ void toThePosition(){
      setServoAlpla(2,getAlpha2());
 }
 void PowerUp(){
-     
+     EAControl(1,1);
+     //delay(1000);
+     //delay(powerUpTime);
+    // EAControl(1,0);
 }
 void fire(){
-
+   EAControl(1,0);
+    /*
+     EAControl(2,1);
+    // delay(fireTime);
+     EAControl(2,0);*/
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void page_1(){                               
@@ -368,7 +393,6 @@ void runtest(int n){
       }while(u8g.nextPage());
       break;
       }
-      
     }
 }
 void test(){
@@ -384,12 +408,17 @@ void setup(){
   irrecv.enableIRIn();   
   servo1.attach(servo1Pin, 500, 2500); // pin8,
   servo2.attach(servo2Pin, 500, 2500); // pin9
+  pinMode(relay_1_1, OUTPUT);
+  //pinMode(relay_1_2, INPUT);
+  //pinMode(relay_1_2, OUTPUT);
+ // pinMode(relay_2_1, OUTPUT);
+ // pinMode(relay_2_2, OUTPUT);
   setServoAlpla(1,90);
+  EAControl(1,0);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
-   updateF=0;
-   //servo2.write(20);  
+   updateF=0; 
    if (irrecv.decode(&results)) {  
         controller=results.value;     //storage key id
         updateF=1;

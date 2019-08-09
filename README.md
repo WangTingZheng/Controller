@@ -9,7 +9,8 @@
 - mini IR remote controller 
 - IR reviver
 - LD-27MG
-- Battery 7.4v 1500mah 20c|3.7v 2000mah 7.4wh
+- Battery: 7.4v 1500mah 20c || 3.7v 2000mah 7.4wh
+- Relay:  Q3F-1Z  5V  4PIN
 # configure
 - run 
 ```git
@@ -125,6 +126,28 @@ GND-GND(battery)
 VCC-7.4V(battery)
 signal-9
 ```
+Relay
+control(Arduino) 
+PowerUp
+```
+GND-GND
+VCC-5V
+H-2
+L-3
+```
+Fire
+```
+GND-GND
+VCC-5V
+H-4
+H-6
+```
+OutPut
+```
+NO-Electrical appliances+
+COM-3.3V
+NC-free
+```
 # function
 - some windows like drawer 
 - read values in the project in oled
@@ -154,3 +177,13 @@ The folder has three C++ source file, they are:
 | ram utilization | 38.7%                                                        | 104%                            | 91%                 |
 | usage           | :+1:                                                         | :no_entry_sign:                 | :fearful:           |
 | PS              | a little warning, but it' [ok](https://github.com/olikraus/u8glib/issues/366) | the  Upgraded version of u8glib | another GUI library |
+
+## about relay
+
+| H    | L    | Relay      | OUTPUT                       |
+| ---- | ---- | ---------- | ---------------------------- |
+| HIGH | HIGH | Not tried. | Not tried.                   |
+| HIGH | LOW  | ON         | NO-COM: ON  \|\| NC-COM: OFF |
+| LOW  | HIGH | OFF        | NO-COM: OFF \|\| NC-COM: OFF |
+| LOW  | LOW  | OFF        | NO-COM: OFF \|\| NC-COM: OFF |
+

@@ -1,3 +1,17 @@
+/*
+#include <Arduino.h>
+const int Pin2 = 2;
+const int Pin3 =3;
+
+void setup() {
+   pinMode(Pin2, OUTPUT);
+   pinMode(Pin3, OUTPUT);
+   digitalWrite(Pin2,HIGH);
+   digitalWrite(Pin3,HIGH);
+}
+void loop() {
+  
+}*/
 #include <Arduino.h>
 #include <U8glib.h>
 #include <IRremote.h>   //IR receiver
@@ -11,6 +25,8 @@ Servo servo2;
 #define maxKey 50   //the max length of the array which include the match you input
 #define back 3
 #define in 4
+#define powerUpTime 2000 
+#define fireTime 2000
 
 
 
@@ -28,6 +44,10 @@ int key[maxKey+1];  //key[10] is flag
 
 const int servo1Pin=8;
 const int servo2Pin=9;
+const int relay_1_1 = 2;      //powerup
+const int relay_1_2 = 3;
+const int relay_2_1 = 4;     //fire
+const int relay_2_2 = 5;
 
 int posOfServo1 = 90;
 int posOfServo2 = 90;
@@ -63,6 +83,26 @@ void u8glibSet(){                                //oled screen init
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+void EAControl(char action,char status ){
+   if(action=="powerUp"){
+      if(status=="true"){
+         digitalWrite(relay_1_1,LOW);
+         digitalWrite(relay_1_2,LOW);
+      }
+      else if(status=="false"){
+         digitalWrite(relay_1_1,HIGH);
+      }
+   }else if(action=="fire"){
+      if(status=="true"){
+         digitalWrite(relay_2_1,HIGH);
+         digitalWrite(relay_2_2,LOW);
+      }else if(status=="false"){
+         digitalWrite(relay_2_1,LOW);
+      }
+   }
+
+}
+
 long  AlplaTransform1(long big){
   return big/1.5-6;
 }
@@ -235,10 +275,14 @@ void toThePosition(){
      setServoAlpla(2,getAlpha2());
 }
 void PowerUp(){
-     
+     EAControl("powerUp","true");
+     delay(powerUpTime);
+     EAControl("powerUp","false");
 }
 void fire(){
-
+     EAControl("fire","true");
+     delay(fireTime);
+     EAControl("fire","false");
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void page_1(){                               
@@ -368,7 +412,6 @@ void runtest(int n){
       }while(u8g.nextPage());
       break;
       }
-      
     }
 }
 void test(){
@@ -384,12 +427,13 @@ void setup(){
   irrecv.enableIRIn();   
   servo1.attach(servo1Pin, 500, 2500); // pin8,
   servo2.attach(servo2Pin, 500, 2500); // pin9
+  pinMode(relay_1_1, OUTPUT);
+  pinMode(relay_1_2, OUTPUT);
   setServoAlpla(1,90);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
-   updateF=0;
-   //servo2.write(20);  
+   updateF=0; 
    if (irrecv.decode(&results)) {  
         controller=results.value;     //storage key id
         updateF=1;
