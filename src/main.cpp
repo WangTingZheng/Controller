@@ -437,7 +437,7 @@ void setup(){
   digitalWrite(relay_2_gnd,LOW);
   digitalWrite(vcc,HIGH); 
   digitalWrite(IRPower,HIGH);
-  setServoAlpla(1,180);
+  setServoAlpla(1,90);
   setServoAlpla(2,0);
   EAControl(1,0);
 }
