@@ -107,7 +107,7 @@ long  AlplaTransform2(long big){
 void setServoAlpla(int flag,long a){
   if(flag==1)
   servo1.write(AlplaTransform1(a));
-  else if(flag==2)servo2.write(AlplaTransform1(a));
+  else if(flag==2)servo2.write(AlplaTransform2(a));
 }
 int thePower(int z){   //calculate the 10^z
   int temp=1;
@@ -320,11 +320,12 @@ void page_1_3(){
    u8g.setFont(u8g_font_unifont);
    u8g.drawStr(0, line*1, "To be launched");
    toThePosition();
+   delay(500);
    PowerUp();
    flag=8;
 }
 void page_1_3_ok(){
-    if(fireflag==0)
+   if(fireflag==0)
    delay(powerUpTime);
    u8g.setFont(u8g_font_unifont);
    u8g.drawStr(0, line*1, "Launched");
@@ -436,7 +437,8 @@ void setup(){
   digitalWrite(relay_2_gnd,LOW);
   digitalWrite(vcc,HIGH); 
   digitalWrite(IRPower,HIGH);
-  setServoAlpla(1,90);
+  setServoAlpla(1,180);
+  setServoAlpla(2,0);
   EAControl(1,0);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -456,7 +458,6 @@ void loop() {
         else if(flag==4&&controller==HEXN[12]) flag=5;
         else if(flag==4&&controller==HEXN[13]) flag=6;
         else if(flag==4&&controller==HEXN[back]) flag=1;
-        else if(flag==7) {flag=8;}
         else if(flag==8&&controller==HEXN[in]) {flag=1; EAControl(2,0);}
         else if(flag==9&&controller==HEXN[in]) flag=1;
         irrecv.resume();  
