@@ -16,6 +16,8 @@ Servo servo2;
 
 
 
+
+
 long HEXN[21]={     //mini remote control key hex id
  0xFD00FF,0xFD807F,0xFD40BF
 ,0xFD20DF,0xFDA05F,0xFD609F
@@ -44,6 +46,7 @@ const int relay_2_gnd=6;
 
 int posOfServo1 = 90;
 int posOfServo2 = 90;
+int fireflag=0;
 
 int RECV_PIN = 13;   //IR revicer pin
 long  controller=0;    // storage key hex id
@@ -281,6 +284,7 @@ void page_1(){
   u8g.drawStr(0 ,line*3, "2.subTwo setting");
   u8g.drawStr(0, line*4, "3.fire!");
   key[maxKey]=0;                             //reroad input data flag
+  fireflag=0;
 }
 void page_0(){
   u8g.setFont(u8g_font_unifont);
@@ -317,18 +321,15 @@ void page_1_3(){
    u8g.drawStr(0, line*1, "To be launched");
    toThePosition();
    PowerUp();
-   u8g.setPrintPos(0,line*2);
-   u8g.print(flag);
    flag=8;
 }
 void page_1_3_ok(){
+    if(fireflag==0)
    delay(powerUpTime);
    u8g.setFont(u8g_font_unifont);
    u8g.drawStr(0, line*1, "Launched");
    fire();
-   u8g.setPrintPos(0,line*2);
-   u8g.print(flag);
-  //u8g.print();
+   fireflag=1;
 }
 
 void page_tips(){
@@ -456,7 +457,7 @@ void loop() {
         else if(flag==4&&controller==HEXN[13]) flag=6;
         else if(flag==4&&controller==HEXN[back]) flag=1;
         else if(flag==7) {flag=8;}
-        else if(flag==8&&controller==HEXN[in]) flag=1;
+        else if(flag==8&&controller==HEXN[in]) {flag=1; EAControl(2,0);}
         else if(flag==9&&controller==HEXN[in]) flag=1;
         irrecv.resume();  
   }
