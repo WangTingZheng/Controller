@@ -11,7 +11,7 @@ Servo servo2;
 #define maxKey 50   //the max length of the array which include the match you input
 #define back 3
 #define in 4
-#define powerUpTime 2000 
+#define powerUpTime 20000
 #define fireTime 2000
 
 
