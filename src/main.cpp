@@ -53,10 +53,11 @@ long  controller=0;    // storage key hex id
 int   speed=100;      //the value i want to modify
 int   flag;           //the flag target differernt page
 int   updateF;       //the updateValue's flag
+int zeroF;
 
 
 int d=100;
-int alpha=10;
+int alpha=90;
 
 IRrecv irrecv(RECV_PIN); 
 decode_results results;
@@ -119,7 +120,7 @@ int thePower(int z){   //calculate the 10^z
 
 void updateValue(int add){   //add one value behind the array "key"
   if(key[maxKey]!=maxKey){
-    key[key[maxKey]]=add;
+    key[key[maxKey]]=add; 
     key[maxKey]++;
   }else {
     key[maxKey]=0;
@@ -215,6 +216,11 @@ void draw_Input(int l,int c) {
       u8g.drawStr( 0, 60, " 0     .");
     }
 }
+void prrintx(){
+  for(int mm=0;mm<=key[maxKey];mm++){
+
+  }
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 void page_modify(int * valueToM,int nextPage,int backPage){
   int number_press;
@@ -224,7 +230,7 @@ void page_modify(int * valueToM,int nextPage,int backPage){
   display_Side();      //display the side
   if(numberP==9){       //if your pressed number "0"
       draw_Input(4,1);  //draw the picture which the "#" in font of 0
-      updateValue(0);   //add 0 to the array key to modify in the reasonable time
+      if(zeroF==1){updateValue(0);zeroF=0;}   //add 0 to the array key to modify in the reasonable time
   }
   else if(numberP==4){  //confirm
       flag=nextPage;            //the next page is page_1_1_1
@@ -256,17 +262,17 @@ void page_modify(int * valueToM,int nextPage,int backPage){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 long getAlpha1(){
      long x;
-     x=d+alpha;
+     x=d;
      return x;
 }
 long getAlpha2(){
      long y;
-     y=d-alpha;
-     return y; 
+     y=alpha;
+     return y ; 
 }
 void toThePosition(){
      setServoAlpla(1,getAlpha1());
-     setServoAlpla(2,getAlpha2());
+     setServoAlpla(2,alpha);
 }
 void PowerUp(){
      EAControl(1,1);
@@ -444,9 +450,11 @@ void setup(){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
    updateF=0; 
+   zeroF=0;
    if (irrecv.decode(&results)) {  
         controller=results.value;     //storage key id
         updateF=1;
+        zeroF=1;
         if(flag==1&&controller==HEXN[9]) flag=0;
         else if(flag==1&&controller==HEXN[12]) flag=2;
         else if(flag==1&&controller==HEXN[13]) flag=4;
