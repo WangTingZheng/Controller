@@ -14,10 +14,6 @@ Servo servo2;
 #define powerUpTime 15000
 #define fireTime 2000
 
-
-
-
-
 long HEXN[21]={     //mini remote control key hex id
  0xFD00FF,0xFD807F,0xFD40BF
 ,0xFD20DF,0xFDA05F,0xFD609F
@@ -34,15 +30,11 @@ const int servo1Pin=8;
 const int servo2Pin=9;
 const int IRPower =12;
 const int vcc=7;
-//const int relay_1_1 = 3;      //powerup
 const int relay_1 = 2;
 const int relay_2 = 5;
-
 const int relay_1_power=11;
-
 const int relay_2_power=3;    //have black tip
 const int relay_2_gnd=6;
-
 
 int posOfServo1 = 90;
 int posOfServo2 = 90;
@@ -53,8 +45,7 @@ long  controller=0;    // storage key hex id
 int   speed=100;      //the value i want to modify
 int   flag;           //the flag target differernt page
 int   updateF;       //the updateValue's flag
-int zeroF;
-
+int   zeroF;
 
 int d=100;
 int alpha=90;
@@ -63,24 +54,21 @@ IRrecv irrecv(RECV_PIN);
 decode_results results;
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE|U8G_I2C_OPT_DEV_0);	// I2C / TWI 
 
-
 void u8glibSet(){                                //oled screen init
-  if ( u8g.getMode() == U8G_MODE_R3G3B2 ) {
+  if(u8g.getMode()==U8G_MODE_R3G3B2){
     u8g.setColorIndex(255);     // white
   }
-  else if ( u8g.getMode() == U8G_MODE_GRAY2BIT ) {
+  else if(u8g.getMode()==U8G_MODE_GRAY2BIT){
     u8g.setColorIndex(3);         // max intensity
   }
-  else if ( u8g.getMode() == U8G_MODE_BW ) {
+  else if(u8g.getMode()==U8G_MODE_BW){
     u8g.setColorIndex(1);         // pixel on
   }
-  else if ( u8g.getMode() == U8G_MODE_HICOLOR ) {
+  else if(u8g.getMode()==U8G_MODE_HICOLOR){
     u8g.setHiColorByRGB(255,255,255);
   }
 }
-
 //////////////////////////////////////////////////////////////////////////////////
-
 void EAControl(int action,int status ){
    if(action==1){
       if(status==1){
@@ -216,11 +204,7 @@ void draw_Input(int l,int c) {
       u8g.drawStr( 0, 60, " 0     .");
     }
 }
-void prrintx(){
-  for(int mm=0;mm<=key[maxKey];mm++){
 
-  }
-}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 void page_modify(int * valueToM,int nextPage,int backPage){
   int number_press;
@@ -262,7 +246,17 @@ void page_modify(int * valueToM,int nextPage,int backPage){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 long getAlpha1(){
      long x;
-     x=d;
+     if(d>=200&&d<210){
+       x=180-20;
+     }else if(d>=210&&d<220){
+       x=180-23;
+     }else if(d>=220&&d<230){
+       x=180-25;
+     }else if(d>=230&&d<240){
+       x=180-27;
+     }else if(d>=240){
+       x=180-30;
+     }
      return x;
 }
 long getAlpha2(){
@@ -417,12 +411,6 @@ void runtest(int n){
       break;
       }
     }
-}
-void test(){
-  for(int i=0;i<90;i=i+0.1){
-      servo1.write(i);
-      delay(10);
-  }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup(){      
