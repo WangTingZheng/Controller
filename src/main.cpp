@@ -11,7 +11,7 @@ Servo servo2;
 #define maxKey 50   //the max length of the array which include the match you input
 #define back 3
 #define in 4
-#define powerUpTime 20000
+#define powerUpTime 15000
 #define fireTime 2000
 
 
@@ -98,10 +98,10 @@ void EAControl(int action,int status ){
 }
 
 long  AlplaTransform1(long big){
-  return big/1.5-6;
+  return 125*big/18+475;
 }
 long  AlplaTransform2(long big){
-  return big/1.5+102;
+  return 125*big/18+1000;
 }
 
 void setServoAlpla(int flag,long a){
@@ -437,8 +437,8 @@ void setup(){
   digitalWrite(relay_2_gnd,LOW);
   digitalWrite(vcc,HIGH); 
   digitalWrite(IRPower,HIGH);
-  setServoAlpla(1,90);
-  setServoAlpla(2,0);
+  setServoAlpla(1,180);
+  setServoAlpla(2,90);
   EAControl(1,0);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -463,4 +463,4 @@ void loop() {
         irrecv.resume();  
   }
   runtest(flag);
-}
+} 
