@@ -3,16 +3,16 @@
 #include <IRremote.h>   //IR receiver
 #include <Servo.h>
 
-Servo servo1; 
-Servo servo2;
-
-#define line 15
-#define column 10
+#define line 15     //line width
+#define column 10   //column width
 #define maxKey 50   //the max length of the array which include the match you input
-#define back 3
-#define in 4
-#define powerUpTime 15000
-#define fireTime 2000
+#define back 3      //back instructions on IR controller
+#define in 4        //get in instructions on IR controller
+#define powerUpTime 15000   //Capacitance power up time(ms)
+#define turnEngine  500    // Steering engine turn off time
+
+Servo servo1;   //Vertical servo
+Servo servo2;   //horizontal servo
 
 long HEXN[21]={     //mini remote control key hex id
  0xFD00FF,0xFD807F,0xFD40BF
@@ -26,29 +26,27 @@ long HEXN[21]={     //mini remote control key hex id
 
 int key[maxKey+1];  //key[10] is flag
 
-const int servo1Pin=8;
-const int servo2Pin=9;
-const int IRPower =12;
-const int vcc=7;
-const int relay_1 = 2;
-const int relay_2 = 5;
-const int relay_1_power=11;
-const int relay_2_power=3;    //have black tip
-const int relay_2_gnd=6;
+const int servo1Pin=8;    //servo1 control signal line
+const int servo2Pin=9;    //servo2 control signal line
+const int IRPower =12;    //IR recvicer power line 
+const int vcc=7;          //
+const int relay_1 = 2;    //relay 1 signal line
+const int relay_2 = 5;    //relay 2 signal line
+const int relay_1_power=11;   //relay 1 power line
+const int relay_2_power=3;    //relay 2 power line
+const int relay_2_gnd=6;      //relay 2 gnd
+const int RECV_PIN = 13;      //IR revicer pin
 
-int posOfServo1 = 90;
-int posOfServo2 = 90;
 int fireflag=0;
 
-int RECV_PIN = 13;   //IR revicer pin
-long  controller=0;    // storage key hex id
-int   speed=100;      //the value i want to modify
 int   flag;           //the flag target differernt page
 int   updateF;       //the updateValue's flag
-int   zeroF;
+int   zeroF;          //button flag used in input page
 
-int d=100;
-int alpha=90;
+long  controller=0;    // storage key hex id
+int   speed=100;      //the value i want to modify
+int d=100;            //value: distance
+int alpha=90;         //value: alpha
 
 IRrecv irrecv(RECV_PIN); 
 decode_results results;
@@ -69,7 +67,7 @@ void u8glibSet(){                                //oled screen init
   }
 }
 //////////////////////////////////////////////////////////////////////////////////
-void EAControl(int action,int status ){
+void EAControl(int action,int status ){           //relay control function
    if(action==1){
       if(status==1){
           pinMode(relay_1, OUTPUT);
@@ -86,14 +84,14 @@ void EAControl(int action,int status ){
    }
 }
 
-long  AlplaTransform1(long big){
+long  AlplaTransform1(long big){              //transform alpha to pwm 
   return 125*big/18+475;
 }
-long  AlplaTransform2(long big){
+long  AlplaTransform2(long big){              //transform alpha to pwm 
   return 125*big/18+1000;
 }
 
-void setServoAlpla(int flag,long a){
+void setServoAlpla(int flag,long a){          //set sevro angle  flag: sevro id;  a: angle
   if(flag==1)
   servo1.write(AlplaTransform1(a));
   else if(flag==2)servo2.write(AlplaTransform2(a));
@@ -105,7 +103,6 @@ int thePower(int z){   //calculate the 10^z
   }
   return temp;
 }
-
 void updateValue(int add){   //add one value behind the array "key"
   if(key[maxKey]!=maxKey){
     key[key[maxKey]]=add; 
@@ -138,7 +135,7 @@ void modify(int *address){         //modify your value in your project, usage: m
     }
    *address=valueK;   
 }
-void draw_Input(int l,int c) {
+void draw_Input(int l,int c) {                      //draw when button pressed
   u8g.setFont(u8g_font_unifont);
   if(l==1){                                        //if you want display "#" in line 1
       u8g.drawStr( 0, 30, " 4  5  6");
@@ -204,9 +201,8 @@ void draw_Input(int l,int c) {
       u8g.drawStr( 0, 60, " 0     .");
     }
 }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-void page_modify(int * valueToM,int nextPage,int backPage){
+void page_modify(int * valueToM,int nextPage,int backPage){    //modify value
   int number_press;
   int x,y;
   int numberP=-1;  //the buuton you pressed id
@@ -244,7 +240,7 @@ void page_modify(int * valueToM,int nextPage,int backPage){
   u8g.print(flag);
 } 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-long getAlpha1(){
+long getAlpha1(){                      // distance to angle
      long x;
      if(d>=200&&d<210){
        x=180-20;
@@ -259,20 +255,20 @@ long getAlpha1(){
      }
      return x;
 }
-long getAlpha2(){
+long getAlpha2(){                        //distance to angle
      long y;
      y=alpha;
      return y ; 
 }
-void toThePosition(){
+void toThePosition(){                    //let sevro to some angle which you want
      setServoAlpla(1,getAlpha1());
      setServoAlpla(2,alpha);
 }
-void PowerUp(){
+void PowerUp(){                 //charge
      EAControl(1,1);
      EAControl(2,0);
 }
-void fire(){
+void fire(){                    //discharge
      EAControl(1,0);
      EAControl(2,1);
 }
@@ -320,7 +316,7 @@ void page_1_3(){
    u8g.setFont(u8g_font_unifont);
    u8g.drawStr(0, line*1, "To be launched");
    toThePosition();
-   delay(500);
+   delay(turnEngine);
    PowerUp();
    flag=8;
 }
@@ -338,7 +334,7 @@ void page_tips(){
   u8g.drawStr(0, line*1, "modify is finshed");
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void runtest(int n){
+void runtest(int n){                          //page manager
     switch (n){
       case 0:{
         u8g.firstPage();
@@ -415,12 +411,12 @@ void runtest(int n){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup(){      
   flag=1;   
-  u8glibSet();      
-  irrecv.enableIRIn();   
-  servo1.attach(servo1Pin, 500, 2500); // pin8,
+  u8glibSet();                          //u8glib screen init
+  irrecv.enableIRIn();                  
+  servo1.attach(servo1Pin, 500, 2500); // pin8
   servo2.attach(servo2Pin, 500, 2500); // pin9
 
-  pinMode(vcc, OUTPUT);
+  pinMode(vcc, OUTPUT);           
   pinMode(IRPower, OUTPUT);
   pinMode(relay_1_power,OUTPUT);
   pinMode(relay_2_power,OUTPUT);
@@ -431,9 +427,9 @@ void setup(){
   digitalWrite(relay_2_gnd,LOW);
   digitalWrite(vcc,HIGH); 
   digitalWrite(IRPower,HIGH);
-  setServoAlpla(1,180);
-  setServoAlpla(2,90);
-  EAControl(1,0);
+  setServoAlpla(1,180);              //set sevro angle 
+  setServoAlpla(2,90);                //set sevro angle
+  EAControl(1,0);                    //close relay,don't charge
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
