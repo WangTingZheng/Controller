@@ -1,31 +1,29 @@
-# Controller for Arduino   
-[![Build Status](https://travis-ci.com/WangTingZheng/Controller.svg?branch=master)](https://travis-ci.com/WangTingZheng/Controller) 
-
-[Engish edition](https://githuab.com/wangtingzheng/controller/README-EN.md)
-# 安装
+# Controller for Arduino
+[![Build Status](https://travis-ci.com/WangTingZheng/Controller.svg?branch=master)](https://travis-ci.com/WangTingZheng/Controller)
+# install
 - [vscode](https://code.visualstudio.com/)
 - [PlatformIO IDE for vscode](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide)
-# 硬件准备
+# hardware
 - Arduino uno
-- 带有4个引脚的，具有I2C通信功能的oled屏幕
-- 迷你红外遥控器
-- 红外接收管
-- LD-27MG舵机
-- 电池: 7.4v 1500mah 20c || 3.7v 2000mah 7.4wh
-- 继电器:  Q3F-1Z  5V  4PIN
-# 配置
-- 执行 
+- oled screen with `I2c` protocol and `ssd1306` control chip(four pin)
+- mini IR remote controller 
+- IR reviver
+- LD-27MG
+- Battery: 7.4v 1500mah 20c || 3.7v 2000mah 7.4wh
+- Relay:  Q3F-1Z  5V  4PIN
+# configure
+- run 
 ```git
 git clone https://github.com/wangtingzheng/controller.git
 ```
-来把我的项目克隆到你的电脑
+to clone my project to your computer.
 
-- 打开 vscode 
-- 打开 PlatformIO 
-- 引入 my project
-- 配置项目的设置
+- open vscode 
+- open PlatformIO 
+- import my project
+- configure project setting
 
-打开 `.vscode/c_cpp_properties.json`，你会发现：
+open `.vscode/c_cpp_properties.json`, you can find this:
 ```c
   "includePath": [
                 "c:/Users/王听正/Documents/PlatformIO/Projects/controller/include",
@@ -45,10 +43,10 @@ git clone https://github.com/wangtingzheng/controller.git
                 ""
             ],
 ```
-根据你的实际情况修正带有 `./lib`的路径，这个是库的路径。
-- 修改红外遥控器的按键id 
+fix the location which is include `./lib`, this is the library folder.
+- set your IR remote button id  
 
-在Arduino IDE 里新建一个工程：
+new a project with Arduino IDE and copy this code:
 ```arduino
 #include <IRremote.h>     // IRremote库声明  
 int RECV_PIN = 11;        //定义红外接收器的引脚为11  
@@ -66,10 +64,10 @@ void loop() {
 	  delay(100);  
 }  
 ```
-当然，你可以使用PlatformIO，但是你得在文件前加`#include <Arduino.h>` 
-- 打开串口
+of course, if you use PlatformIO, you should add `#include <Arduino.h>` in font of this code  
+- open serial monitor(I don't know how to use it in PlatformIO, maybe in the cli?)
 
-按下每一个按键并且通过串口记录下每一个按键的id并在项目中修正它
+press every button and write it down, and then, switch this part of my project:
 ``` c
 long HEXN[21]={     //mini remote control key hex id
  0xFD00FF,0xFD807F,0xFD40BF
@@ -81,10 +79,10 @@ long HEXN[21]={     //mini remote control key hex id
 ,0xFD18E7,0xFD9867,0xFD58A7
 }; 
 ```
-按键顺序是从上到下，从左向右
-- 修正舵机参数
+The order is from  top to bottom, from left to right
+- fix steering engine parameter
 
-在 `main.cpp`中找到以下函数：
+find this in `main.cpp`
 ```c
 long  AlplaTransform1(long big){
   return big/1.5-6;
@@ -93,12 +91,12 @@ long  AlplaTransform2(long big){
   return big/1.5+102;
 }
 ```
-改变 `return`后面的函数, 让项目能输入度数，返回转的度数的PWM波。
-- 在vscode下端，有一个打勾的按钮，点击它PlatformIO会编译当前的项目
+change the code after `return`, make should that your engine can turn to `big` degrees
+- press the PlatformIO build under the vscode bar
+- if everything is ok, the building will be passed.
 
-- 如果一切正常的话，编译会通过
 
-# 连接
+# connect
 oled:
 ```
 GND-GND
@@ -106,17 +104,17 @@ VCC-3.3V
 SCL-SCL
 SDA-SDA
 ```
-迷你红外遥控器 :
+mini IR remote controller :
 ```
-不需要连接，这是无线的
+No need to connection, it's Wireless.
 ```
-红外接收管
+IR reviver
 ```
 GND-GND
 VCC-12
 Vout-13
 ```
-舵机
+steering engine
 ```
 GND-GND(battery)
 VCC-7.4v(battery)
@@ -128,64 +126,64 @@ GND-GND(battery)
 VCC-7.4V(battery)
 signal-9
 ```
-继电器
-Arduino控制端
-控制上电的继电器
+Relay
+control(Arduino) 
+PowerUp
 ```
 GND-GND
 H-free
 L-2
 VCC-11
 ```
-控制开火的继电器
+Fire
 ```
 GND-6
 VCC-3
 H-free
 L-5
 ```
-继电器输出
+OutPut
 ```
-NO-用电器的+
+NO-Electrical appliances+
 COM-3.3V
-NC-不接
+NC-free
 ```
-# 函数
-- 像抽屉一样的窗口
-- 在oled中显示项目中的变量值
-- 用红外遥控器修改项目中任意的变量值
-- 能够控制两个舵机
-- 能够控制两个继电器控制电磁炮充电和放电
+# function
+- some windows like drawer 
+- read values in the project in oled
+- modify values with IR controller
+- control two Steering engines
 
 ![function.jpg](https://s2.ax1x.com/2019/08/08/e7BD6P.png)
-# 一些重要的事
-## 关于库
-- GFX(不推荐)
-- SSD1306(与GFX一起的)
+# Something Important
+## about library
+- GFX(not recommend)
+- SSD1306(together with GFX)
 - IRremote
-- u8glib(可行)
-- u8g2(SRAM占有率太高，uno板没法用)
-### 如果安装库
-- 把要安装的库拷贝到 `./lib`目录下
-- 在vscode的`included path` 中加入所有库的地址
+- u8glib(it's work)
+- u8g2(not work because of high ram utilization)
+### how to install library
+- copy your library to `./lib`
+- add every library path to `included path` in vscode
 
-## 关于RAM
-如果你想要使用Arduino uno，我很不幸地告诉你，有一些GUI库中，有一些你无法使用，因为这些GUI库地RAM占有率太高，但如果你有其它的Arduino开发板，你可以随便使用。
+## about RAM
+If you want use it in Arduino uno, I am sorry to telling you that your Arduino may lost all usable ram because of some GUI library, I have already show the ram utilization of different GUI library, you can choose what you want. if you have more powerful Arduino, everything is nothing.
 
-## 关于 `./test`
-这里包含着三个GUI库：
+## about `./test`
+The folder has three C++ source file, they are:
+
 |                 | U8glib                                                       | U8g2                            | GXF                 |
 | --------------- | ------------------------------------------------------------ | ------------------------------- | ------------------- |
-| ram 占有率 | 38.7%                                                        | 104%                            | 91%                 |
-| 使用情况           | :+1:                                                         | :no_entry_sign:                 | :fearful:           |
-| PS              | 有一些waring，但是[不影响](https://github.com/olikraus/u8glib/issues/366) | u8glib的升级版 | 另外一个GUI库 |
+| ram utilization | 38.7%                                                        | 104%                            | 91%                 |
+| usage           | :+1:                                                         | :no_entry_sign:                 | :fearful:           |
+| PS              | a little warning, but it' [ok](https://github.com/olikraus/u8glib/issues/366) | the  Upgraded version of u8glib | another GUI library |
 
-## 关于继电器
+## about relay
 
 | H    | L    | Relay      | OUTPUT                       |
 | ---- | ---- | ---------- | ---------------------------- |
-| 激活 | 激活 | 工作        | NO-COM: 连通  \|\| NC-COM: 不连通    |
-| 激活 | 不激活  | 工作         | NO-COM: 连通  \|\| NC-COM: 不连通 |
-| 不激活  | 激活 | 不工作        | NO-COM: 不连通 \|\| NC-COM: 连通 |
-| 不激活  | 不激活  | 不工作        | NO-COM: 不连通 \|\| NC-COM: 连通 |
+| HIGH | HIGH | Not tried. | Not tried.                   |
+| HIGH | LOW  | ON         | NO-COM: ON  \|\| NC-COM: OFF |
+| LOW  | HIGH | OFF        | NO-COM: OFF \|\| NC-COM: OFF |
+| LOW  | LOW  | OFF        | NO-COM: OFF \|\| NC-COM: OFF |
 
