@@ -1,7 +1,7 @@
 # Controller for Arduino   
 [![Build Status](https://travis-ci.com/WangTingZheng/Controller.svg?branch=master)](https://travis-ci.com/WangTingZheng/Controller) 
 
-[Engish edition](https://githuab.com/wangtingzheng/controller/README-EN.md)
+[Engish edition](https://github.com/WangTingZheng/Controller/blob/master/README-EN.md)
 # 安装
 - [vscode](https://code.visualstudio.com/)
 - [PlatformIO IDE for vscode](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide)
