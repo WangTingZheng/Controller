@@ -1,9 +1,7 @@
 # Controller for Arduino   
-[![Build Status](https://travis-ci.com/WangTingZheng/Controller.svg?branch=master)](https://travis-ci.com/WangTingZheng/Controller) 
-
 🎉庆祝本项目获得黑龙江电子设计大赛2019年国赛H题省级三等奖！
 
-[English edition](https://github.com/WangTingZheng/Controller/blob/master/README-EN.md)
+[![Build Status](https://travis-ci.com/WangTingZheng/Controller.svg?branch=master)](https://travis-ci.com/WangTingZheng/Controller)  [English edition](https://github.com/WangTingZheng/Controller/blob/master/README-EN.md)
 # 安装
 - [vscode](https://code.visualstudio.com/)
 - [PlatformIO IDE for vscode](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide)
