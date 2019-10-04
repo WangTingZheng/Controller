@@ -1,8 +1,15 @@
 # Controller for Arduino   
-🎉庆祝本项目获得黑龙江电子设计大赛2019年国赛H题省级三等奖！
 
 [![Build Status](https://travis-ci.com/WangTingZheng/Controller.svg?branch=master)](https://travis-ci.com/WangTingZheng/Controller)  
+🎉庆祝本项目获得黑龙江电子设计大赛2019年国赛H题省级三等奖！
+
 [English edition](https://github.com/WangTingZheng/Controller/blob/master/README-EN.md)
+# 功能
+- 像抽屉一样的窗口
+- 在oled中显示项目中的变量值
+- 用红外遥控器修改项目中任意的变量值
+- 能够控制两个舵机
+- 能够控制两个继电器控制电磁炮充电和放电
 # 安装
 - [vscode](https://code.visualstudio.com/)
 - [PlatformIO IDE for vscode](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide)
@@ -151,12 +158,7 @@ NO-用电器的+
 COM-3.3V
 NC-不接
 ```
-# 函数
-- 像抽屉一样的窗口
-- 在oled中显示项目中的变量值
-- 用红外遥控器修改项目中任意的变量值
-- 能够控制两个舵机
-- 能够控制两个继电器控制电磁炮充电和放电
+
 
 ![function.jpg](https://s2.ax1x.com/2019/08/08/e7BD6P.png)
 # 一些重要的事
