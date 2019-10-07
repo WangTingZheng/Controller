@@ -36,25 +36,30 @@ git clone https://github.com/wangtingzheng/controller.git
 打开 `.vscode/c_cpp_properties.json`，你会发现：
 ```c
   "includePath": [
-                "c:/Users/王听正/Documents/PlatformIO/Projects/controller/include",
-                "c:/Users/王听正/Documents/PlatformIO/Projects/controller/src",
-                "c:/Users/王听正/Documents/PlatformIO/Projects/controller/lib/Arduino-IRremote-master",
-                "c:/Users/王听正/Documents/PlatformIO/Projects/controller/lib/Adafruit_SSD1306",
-                "c:/Users/王听正/Documents/PlatformIO/Projects/controller/lib/U8g2",
-                "C:/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/Wire/src",
-                "c:/Users/王听正/Documents/PlatformIO/Projects/controller/lib/Adafruit_GFX",
-                "C:/.platformio/packages/framework-arduinoavr/cores/arduino",
-                "C:/.platformio/packages/framework-arduinoavr/variants/standard",
-                "C:/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/EEPROM/src",
-                "C:/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/HID/src",
-                "C:/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SPI/src",
-                "C:/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SoftwareSerial/src",
-                "C:/.platformio/packages/tool-unity",
-                ""
+                    "../include",
+                    "../src",
+                    "../lib/U8glib",
+                    "../lib/U8glib/utility",
+                    "../lib/Servo/src",
+                    "../lib/Arduino-IRremote-master",
+                    "../lib/Adafruit_GFX",
+                    "../lib/Adafruit_SSD1306",
+                    "../lib/JY901",
+                    "../lib/Tree",
+                    "../lib/U8g2/src",
+                    "C:/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/EEPROM/src",
+                    "C:/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/HID/src",
+                    "C:/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SPI/src",
+                    "C:/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SoftwareSerial/src",
+                    "C:/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/Wire/src",
+                    "C:/.platformio/packages/tool-unity",
+                    "C:/.platformio/packages/framework-arduinoavr/cores/arduino",
+                    "C:/.platformio/packages/framework-arduinoavr/variants/standard",
+                    ""
             ],
 ```
-根据你的实际情况修正带有 `./lib`的路径，这个是库的路径。
-- 修改红外遥控器的按键id 
+根据你的实际情况修正带有 `./lib`的路径，这个是库的路径。如果你有新的库要加入，请在此处添加它的路径，让编译器能找到它们
+- 修改红外遥控器的按键id
 
 在Arduino IDE 里新建一个工程：
 ```arduino
