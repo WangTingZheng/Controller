@@ -22,13 +22,13 @@ long HEXN[21]={     //mini remote control key hex id
 ,0xFD08F7,0xFD8877,0xFD48B7
 ,0xFD28D7,0xFDA857,0xFD6897
 ,0xFD18E7,0xFD9867,0xFD58A7
-}; 
+};
 
 int key[maxKey+1];  //key[10] is flag
 
 const int servo1Pin=8;    //servo1 control signal line
 const int servo2Pin=9;    //servo2 control signal line
-const int IRPower =12;    //IR recvicer power line 
+const int IRPower =12;    //IR recvicer power line
 const int vcc=7;          //
 const int relay_1 = 2;    //relay 1 signal line
 const int relay_2 = 5;    //relay 2 signal line
@@ -48,9 +48,9 @@ int   speed=100;      //the value i want to modify
 int d=100;            //value: distance
 int alpha=90;         //value: alpha
 
-IRrecv irrecv(RECV_PIN); 
+IRrecv irrecv(RECV_PIN);
 decode_results results;
-U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE|U8G_I2C_OPT_DEV_0);	// I2C / TWI 
+U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE|U8G_I2C_OPT_DEV_0);	// I2C / TWI
 
 void u8glibSet(){                                //oled screen init
   if(u8g.getMode()==U8G_MODE_R3G3B2){
@@ -84,10 +84,10 @@ void EAControl(int action,int status ){           //relay control function
    }
 }
 
-long  AlplaTransform1(long big){              //transform alpha to pwm 
+long  AlplaTransform1(long big){              //transform alpha to pwm
   return 125*big/18+475;
 }
-long  AlplaTransform2(long big){              //transform alpha to pwm 
+long  AlplaTransform2(long big){              //transform alpha to pwm
   return 125*big/18+1000;
 }
 
@@ -105,7 +105,7 @@ int thePower(int z){   //calculate the 10^z
 }
 void updateValue(int add){   //add one value behind the array "key"
   if(key[maxKey]!=maxKey){
-    key[key[maxKey]]=add; 
+    key[key[maxKey]]=add;
     key[maxKey]++;
   }else {
     key[maxKey]=0;
@@ -133,7 +133,7 @@ void modify(int *address){         //modify your value in your project, usage: m
     for(int n=www;n>0;n--){
         valueK+=key[n]*thePower(key[maxKey]-n-1);
     }
-   *address=valueK;   
+   *address=valueK;
 }
 void draw_Input(int l,int c) {                      //draw when button pressed
   u8g.setFont(u8g_font_unifont);
@@ -219,8 +219,8 @@ void page_modify(int * valueToM,int nextPage,int backPage){    //modify value
   else if(numberP==3){ //cansle
         flag=backPage;        //next value is page_1
   }
-  else if(numberP>11){  //if you pressed number 
-    number_press=numberP-11; //get the real number 
+  else if(numberP>11){  //if you pressed number
+    number_press=numberP-11; //get the real number
     if(updateF==1) {updateValue(number_press); updateF=0;}
     if((number_press%3)!=0){  //get the number's position
         x=number_press/3+1;
@@ -235,10 +235,10 @@ void page_modify(int * valueToM,int nextPage,int backPage){    //modify value
     x=0;
     y=0;
   }
-  draw_Input(x,y);  //display number 
+  draw_Input(x,y);  //display number
   u8g.setPrintPos(160,60);
   u8g.print(flag);
-} 
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 long getAlpha1(){                      // distance to angle
      long x;
@@ -258,7 +258,7 @@ long getAlpha1(){                      // distance to angle
 long getAlpha2(){                        //distance to angle
      long y;
      y=alpha;
-     return y ; 
+     return y ;
 }
 void toThePosition(){                    //let sevro to some angle which you want
      setServoAlpla(1,getAlpha1());
@@ -273,7 +273,7 @@ void fire(){                    //discharge
      EAControl(2,1);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void page_1(){                               
+void page_1(){
   u8g.setFont(u8g_font_unifont);
   u8g.drawStr(0, line*1, "0.read the value");
   u8g.drawStr(0, line*2, "1.subOne setting");
@@ -344,56 +344,56 @@ void runtest(int n){                          //page manager
         break;
       }
       case 1:{
-        u8g.firstPage();  
+        u8g.firstPage();
         do {
             page_1();
         }while( u8g.nextPage() );
         break;
       }
       case 2:{
-       u8g.firstPage();  
+       u8g.firstPage();
        do {
             page_1_1();
         }while( u8g.nextPage() );
         break;
       }
       case 3:{
-        u8g.firstPage();  
+        u8g.firstPage();
         do {
             page_1_1_1();
         }while( u8g.nextPage() );
         break;
       }
       case 4:{
-        u8g.firstPage();  
+        u8g.firstPage();
         do {
             page_1_2();
         }while( u8g.nextPage());
         break;
       }
       case 5:{
-        u8g.firstPage();  
+        u8g.firstPage();
         do {
             page_1_2_1();
         }while( u8g.nextPage());
         break;
       }
       case 6:{
-        u8g.firstPage();  
+        u8g.firstPage();
         do {
             page_1_2_2();
         }while( u8g.nextPage());
         break;
       }
       case 7:{
-        u8g.firstPage();  
+        u8g.firstPage();
         do {
             page_1_3();
         }while( u8g.nextPage());
         break;
       }
       case 8:{
-        u8g.firstPage();  
+        u8g.firstPage();
         do {
             page_1_3_ok();
         }while( u8g.nextPage());
@@ -409,14 +409,14 @@ void runtest(int n){                          //page manager
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void setup(){      
-  flag=1;   
+void setup(){
+  flag=1;
   u8glibSet();                          //u8glib screen init
-  irrecv.enableIRIn();                  
+  irrecv.enableIRIn();
   servo1.attach(servo1Pin, 500, 2500); // pin8
   servo2.attach(servo2Pin, 500, 2500); // pin9
 
-  pinMode(vcc, OUTPUT);           
+  pinMode(vcc, OUTPUT);
   pinMode(IRPower, OUTPUT);
   pinMode(relay_1_power,OUTPUT);
   pinMode(relay_2_power,OUTPUT);
@@ -425,17 +425,17 @@ void setup(){
   digitalWrite(relay_1_power,HIGH);
   digitalWrite(relay_2_power,HIGH);
   digitalWrite(relay_2_gnd,LOW);
-  digitalWrite(vcc,HIGH); 
+  digitalWrite(vcc,HIGH);
   digitalWrite(IRPower,HIGH);
-  setServoAlpla(1,180);              //set sevro angle 
+  setServoAlpla(1,180);              //set sevro angle
   setServoAlpla(2,90);                //set sevro angle
   EAControl(1,0);                    //close relay,don't charge
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
-   updateF=0; 
+   updateF=0;
    zeroF=0;
-   if (irrecv.decode(&results)) {  
+   if (irrecv.decode(&results)) {
         controller=results.value;     //storage key id
         updateF=1;
         zeroF=1;
@@ -452,7 +452,7 @@ void loop() {
         else if(flag==4&&controller==HEXN[back]) flag=1;
         else if(flag==8&&controller==HEXN[in]) {flag=1; EAControl(2,0);}
         else if(flag==9&&controller==HEXN[in]) flag=1;
-        irrecv.resume();  
+        irrecv.resume();
   }
   runtest(flag);
-} 
+}
