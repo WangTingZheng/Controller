@@ -1,19 +1,36 @@
-# Controller for Arduino   
+# <p align="center">🏒Controller: 一个电赛项目</p>
 
-[![Build Status](https://travis-ci.com/WangTingZheng/Controller.svg?branch=master)](https://travis-ci.com/WangTingZheng/Controller)  
-🎉庆祝本项目获得黑龙江电子设计大赛2019年国赛H题省级三等奖！
+<p align="center">
+    <a href="">
+        <img src="https://img.shields.io/badge/2019-省三-brightgreen.svg">
+    </a>
+     <a href="https://github.com/WangTingZheng/Controller/blob/master/README-EN.md">
+        <img src="https://img.shields.io/badge/README-English-brightgreen.svg">
+    </a>
+    <a href="https://github.com/WangTingZheng/Controller">
+      <img src="https://img.shields.io/github/stars/WangTingZheng/Controller.svg?style=social">
+    </a>
+    <a href="https://travis-ci.com/WangTingZheng/Controller">
+     <img src="https://travis-ci.com/WangTingZheng/Controller.svg?branch=master">
+     </a>
+</p>
 
-[English edition](https://github.com/WangTingZheng/Controller/blob/master/README-EN.md)
-# 功能
+<p align="center">
+    <a href="">
+        <img src="https://s2.ax1x.com/2019/08/08/e7BD6P.png">
+    </a>
+</p>
+
+## 功能
 - 像抽屉一样的窗口
 - 在oled中显示项目中的变量值
 - 用红外遥控器修改项目中任意的变量值
 - 能够控制两个舵机
 - 能够控制两个继电器控制电磁炮充电和放电
-# 安装
+## 安装
 - [vscode](https://code.visualstudio.com/)
 - [PlatformIO IDE for vscode](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide)
-# 硬件准备
+## 硬件准备
 - Arduino uno
 - 带有4个引脚的，具有I2C通信功能的oled屏幕
 - 迷你红外遥控器
@@ -21,7 +38,7 @@
 - LD-27MG舵机
 - 电池: 7.4v 1500mah 20c || 3.7v 2000mah 7.4wh
 - 继电器:  Q3F-1Z  5V  4PIN
-# 配置
+## 配置
 - 执行 
 ```git
 git clone https://github.com/wangtingzheng/controller.git
@@ -111,7 +128,7 @@ long  AlplaTransform2(long big){
 
 - 如果一切正常的话，编译会通过
 
-# 连接
+## 连接
 oled:
 ```
 GND-GND
@@ -164,23 +181,21 @@ COM-3.3V
 NC-不接
 ```
 
-
-![function.jpg](https://s2.ax1x.com/2019/08/08/e7BD6P.png)
-# 一些重要的事
-## 关于库
+## 一些重要的事
+### 关于库
 - GFX(不推荐)
 - SSD1306(与GFX一起的)
 - IRremote
 - u8glib(可行)
 - u8g2(SRAM占有率太高，uno板没法用)
-### 如果安装库
+#### 如果安装库
 - 把要安装的库拷贝到 `./lib`目录下
 - 在vscode的`included path` 中加入所有库的地址
 
-## 关于RAM
+### 关于RAM
 如果你想要使用Arduino uno，我很不幸地告诉你，有一些GUI库中，有一些你无法使用，因为这些GUI库地RAM占有率太高，但如果你有其它的Arduino开发板，你可以随便使用。
 
-## 关于 `./test`
+### 关于 `./test`
 这里包含着三个GUI库：
 
 |                 | U8glib                               | U8g2                            | GXF             |
@@ -189,7 +204,7 @@ NC-不接
 | 使用情况         | :+1:                                 | :no_entry_sign:                 | :fearful:       |
 | PS              | 有一些waring，但是[不影响](https://github.com/olikraus/u8glib/issues/366) | u8glib的升级版 | 另外一个GUI库 |
 
-## 关于继电器
+### 关于继电器
 
 | H    | L    | Relay      | OUTPUT                       |
 | ---- | ---- | ---------- | ---------------------------- |
